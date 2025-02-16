@@ -1,0 +1,85 @@
+<view class="qa-container">
+  <!-- 菜单按钮 -->
+  <view class="menu-btn" bindtap="toggleSessionList">
+    <view class="menu-icon"></view>
+  </view>
+
+  <!-- 会话侧边栏 -->
+  <view class="session-list {{showSessionList ? 'show' : ''}}">
+    <view class="session-header">历史对话</view>
+    <view class="sessions-container">
+      <block wx:for="{{sessionList}}" wx:key="id">
+        <view id="session-item-{{item.id}}" class="session-item {{currentSessionId === item.id ? 'active' : ''}}"
+              bindtap="onSelectSession"
+              data-id="{{item.id}}">
+          <!-- 会话标题输入框：非编辑时通过 placeholder 显示“新对话”，编辑时直接显示绑定的值 -->
+          <input class="session-title-input {{editingSessionId === item.id ? 'active' : ''}}"
+                 type="text"
+                 value="{{item.title}}"
+                 data-id="{{item.id}}"
+                 focus="{{editingSessionId === item.id}}"
+                 bindinput="onSessionTitleInput"
+                 bindblur="onSessionTitleBlur" />
+          <view class="session-actions">
+            <view class="btn-more" data-id="{{item.id}}" catchtap="toggleSessionActionsMenu">
+              <text class="more-icon">···</text>
+            </view>
+            <!-- 操作菜单：点击后显示重命名和删除 -->
+            <view class="actions-menu {{showActionsMenuSessionId === item.id ? 'show' : ''}}">
+              <view class="action-item rename-action" data-session-id="{{item.id}}" catchtap="onRenameSession">重命名</view>
+              <view class="action-item delete-action" data-session-id="{{item.id}}" catchtap="onDeleteSession">删除</view>
+            </view>
+          </view>
+        </view>
+      </block>
+    </view>
+    <view class="new-session">
+      <button class="btn-create" bindtap="onCreateSession">新建对话</button>
+    </view>
+  </view>
+
+  <!-- 遮罩层 -->
+  <view class="mask {{showSessionList ? 'show' : ''}}" bindtap="toggleSessionList"></view>
+
+  <!-- 聊天区域 -->
+  <view class="chat-window">
+    <scroll-view
+      scroll-y
+      scroll-into-view="{{scrollToMessage}}"
+      class="messages-container"
+      enhanced="{{true}}"
+      show-scrollbar="{{false}}">
+      <view wx:if="{{messageList.length === 0}}" class="empty-state">
+        <text>开始新的对话...</text>
+      </view>
+      <block wx:for="{{messageList}}" wx:key="idx">
+        <view id="msg-{{index}}" class="msg-item {{item.role=='user'?'user':'bot'}}">
+          <view class="msg-content">
+            <text>{{item.content}}</text>
+          </view>
+        </view>
+      </block>
+      <view wx:if="{{loading}}" class="msg-item bot">
+        <view class="msg-content loading">
+          <view class="dot-typing"></view>
+        </view>
+      </view>
+    </scroll-view>
+
+    <!-- 输入区域 -->
+    <view class="input-area">
+      <view class="input-bar">
+        <input class="msg-input"
+               placeholder="输入问题..."
+               bindinput="onInputMessage"
+               bindconfirm="onSend"
+               value="{{currentMsg}}"
+               confirm-type="send"
+               hold-keyboard="{{true}}"/>
+        <view class="btn-send {{currentMsg.trim() ? 'active' : ''}}" bindtap="onSend">
+          <view class="send-icon"></view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

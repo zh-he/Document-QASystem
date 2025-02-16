@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-{{ category }} alert-dismissible fade show">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="card mt-4">
+        <div class="card-header bg-warning text-white">
+            <i class="fas fa-exclamation-triangle me-2"></i> 待批准的小程序用户
+        </div>
+        <div class="card-body">
+            <table class="table table-hover table-striped">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>用户名</th>
+                        <th>注册时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in pending_users %}
+                        <tr>
+                            <td>{{ user.id }}</td>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>
+                                <form action="{{ url_for('approve_user') }}" method="POST" class="d-inline">
+                                    <input type="hidden" name="user_id" value="{{ user.id }}">
+                                    <button type="submit" class="btn btn-link p-0 text-decoration-none text-primary">批准</button>
+                                </form>
+                                <span class="text-muted">|</span>
+                                <form action="{{ url_for('reject_user') }}" method="POST" class="d-inline">
+                                    <input type="hidden" name="user_id" value="{{ user.id }}">
+                                    <button type="submit" class="btn btn-link p-0 text-decoration-none text-danger">拒绝</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">暂无待批准用户</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-dark text-white">
+            <i class="fas fa-users-cog me-2"></i> 用户管理
+            <span class="badge bg-secondary float-end">总数: {{ pagination.total }}</span>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>用户名</th>
+                            <th>注册时间</th>
+                            <th>角色</th>
+                            <th>密码</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in pagination.items %}
+                            <tr>
+                                <td>{{ user.id }}</td>
+                                <td>{{ user.username }}</td>
+                                <td>{{ user.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td>{{ user.role.name if user.role else '无' }}</td>
+                                <td>
+                                    <button type="button" class="btn btn-link p-0 text-decoration-none text-warning" onclick="resetPassword('{{ user.id }}', '{{ user.username }}')">重置密码</button>
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        {% if user.role.name != 'super_admin' %}
+                                            <form action="{{ url_for('delete_user') }}" method="POST" class="d-inline">
+                                                <input type="hidden" name="user_id" value="{{ user.id }}">
+                                                <button type="submit" class="btn btn-link p-0 text-decoration-none text-danger"
+                                                        onclick="return confirm('确定删除该用户？')">删除</button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">暂无用户数据</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% if pagination.pages > 1 %}
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        {% if pagination.has_prev %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ pagination.prev_num }}">&laquo;</a>
+                            </li>
+                        {% endif %}
+
+                        {% for page_num in pagination.iter_pages() %}
+                            <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
+                                <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                            </li>
+                        {% endfor %}
+
+                        {% if pagination.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ pagination.next_num }}">&raquo;</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-header bg-primary text-white">
+            <i class="fas fa-user-plus me-2"></i> 创建新用户
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('add_user') }}">
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-3">
+                        <input type="text" name="username" class="form-control" placeholder="输入用户名" required minlength="4">
+                    </div>
+                    <div class="col-md-3">
+                        <input type="password" name="password" class="form-control" placeholder="输入密码" required minlength="8">
+                    </div>
+                    <div class="col-md-3">
+                        <select name="role_id" class="form-control" required>
+                            <option value="">选择角色</option>
+                            {% for role in roles %}
+                                {% if role.name != 'mini_user' %}
+                                    <option value="{{ role.id }}">{{ role.name }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary">创建用户</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function resetPassword(userId, username) {
+    if (confirm(`确定要重置用户 ${username} (ID: ${userId}) 的密码吗？`)) {
+        fetch('/admin/users/reset_password', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+                user_id: userId
+            })
+        })
+        .then(response => {
+            if (response.ok) {
+                // 等待服务器处理后，重定向到用户管理页面，刷新页面
+                window.location.href = '/admin/users';
+            } else {
+                return Promise.reject('密码重置失败');
+            }
+        })
+        .catch(error => {
+            alert('密码重置失败: ' + error);
+        });
+    }
+}
+
+</script>
+
+{% endblock %}

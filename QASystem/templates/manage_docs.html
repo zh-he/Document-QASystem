@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="p-4">
+  <h2>文档管理</h2>
+
+  <!-- 上传文档表单 -->
+  <div class="card mb-4">
+    <div class="card-header">上传新文档</div>
+    <div class="card-body">
+      <form id="upload-form" action="{{ url_for('upload_doc_page') }}" method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+          <input type="file" id="file-input" name="file" class="form-control" multiple required>
+        </div>
+        <div id="file-list" class="mb-3"></div>
+        <button type="submit" class="btn btn-primary">上传</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 文档列表 -->
+  <div class="card">
+    <div class="card-header">已上传文档</div>
+    <div class="card-body">
+      {% if file_list %}
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>文件名</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for filename in file_list %}
+            <tr>
+              <td>{{ filename }}</td>
+              <td>
+                <form action="{{ url_for('delete_doc_page') }}" method="POST" style="display:inline;">
+                  <input type="hidden" name="filename" value="{{ filename }}">
+                  <button type="submit" class="btn btn-danger btn-sm"
+                          onclick="return confirm('确认删除该文档吗？')">删除</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p>尚无文档</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById("file-input").addEventListener("change", function(event) {
+    const fileList = document.getElementById("file-list");
+    fileList.innerHTML = "";
+    Array.from(event.target.files).forEach((file, index) => {
+      const fileItem = document.createElement("div");
+      fileItem.className = "file-item d-flex justify-content-between align-items-center p-2 border rounded bg-light mb-2";
+      fileItem.innerHTML = `
+        <span>${file.name}</span>
+        <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeFile(${index})">×</button>
+      `;
+      fileList.appendChild(fileItem);
+    });
+  });
+
+  function removeFile(index) {
+    const dt = new DataTransfer();
+    const input = document.getElementById("file-input");
+    const { files } = input;
+    for (let i = 0; i < files.length; i++) {
+      if (i !== index) {
+        dt.items.add(files[i]);
+      }
+    }
+    input.files = dt.files;
+    document.getElementById("file-list").children[index].remove();
+  }
+</script>
+
+{% endblock %}

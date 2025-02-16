@@ -1,0 +1,428 @@
+/* 整体容器 */
+.qa-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #f8f9fa; 
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+  
+/* 菜单按钮 */
+.menu-btn {
+    position: fixed;
+    top: 40rpx;
+    left: 40rpx;
+    width: 88rpx;
+    height: 88rpx;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ffffff;
+    border-radius: 12rpx;
+    box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+    z-index: 100;
+}
+
+.menu-icon {
+    width: 44rpx;
+    height: 6rpx;
+    background-color: #2d3436;
+    position: relative;
+    border-radius: 3rpx;
+}
+.menu-icon::before,
+.menu-icon::after {
+    content: '';
+    position: absolute;
+    width: 44rpx;
+    height: 6rpx;
+    background-color: #2d3436;
+    left: 0;
+    border-radius: 3rpx;
+}
+.menu-icon::before {
+    top: -14rpx;
+}
+.menu-icon::after {
+    top: 14rpx;
+}
+
+/* 会话列表侧边栏 */
+.session-list {
+    position: fixed;
+    left: -100%;
+    top: 0;
+    width: 80%;
+    max-width: 640rpx;
+    height: 100%;
+    background-color: #ffffff;
+    box-shadow: 8rpx 0 48rpx rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    transition: left 0.3s ease;
+    padding: 80rpx 40rpx;
+    overflow-y: auto;
+    border-top-right-radius: 12rpx;
+    border-bottom-right-radius: 12rpx;
+}
+.session-list.show {
+    left: 0;
+}
+
+.session-header {
+    font-size: 36rpx;
+    font-weight: 600;
+    color: #2d3436;
+    margin-bottom: 40rpx;
+    padding-bottom: 20rpx;
+    border-bottom: 2rpx solid #e9ecef;
+}
+
+.sessions-container {
+    margin-top: 40rpx;
+}
+
+/* 会话项 */
+.session-item {
+    display: flex;
+    justify-content: space-between; /* 保持 space-between，标题和操作按钮左右分布 */
+    border-radius: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    position: relative;
+    background-color: #f5f5f5; /*  背景色保持 */
+}
+
+.session-item:hover {
+    background-color: #eaeaea;
+}
+
+.session-item.active {
+    background-color: #e0e0e0;
+    font-weight: 500;
+    /* border: 1px solid #d0d0d0;  如果您之前有边框，可以考虑移动到内部容器 */
+}
+
+/* 会话标题输入框 */
+.session-title-input {
+    font-size: 32rpx;
+    height: 80rpx;
+    border-radius: 20rpx;
+    color: #2d3436;
+    flex: 1;
+    padding: 0 24rpx;
+    transition: all 0.3s ease;
+    outline: none;
+}
+.session-title-input:focus {
+    border-color: #4dabf7;
+    box-shadow: 0 8rpx 24rpx rgba(77, 171, 247, 0.1);
+}
+
+/* 操作菜单容器 */
+.session-actions {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* 三点按钮 */
+.btn-more {
+    width: 48rpx;
+    height: 48rpx;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ced5db;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+}
+.btn-more:hover {
+    background-color: #84898d;
+}
+.more-icon {
+    font-size: 36rpx;
+    color: #ffffff;
+    line-height: 1;
+}
+
+/* 操作菜单（重命名/删除） */
+.actions-menu {
+    position: absolute;
+    top: 120%;
+    right: 0;
+    background-color: #ffffff;
+    border-radius: 12rpx;
+    box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.1);
+    z-index: 101;
+    overflow: hidden;
+    min-width: 160rpx;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20rpx);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+}
+.actions-menu.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+.action-item {
+    padding: 20rpx 24rpx;
+    font-size: 28rpx;
+    color: #2d3436;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    white-space: nowrap;
+}
+.action-item:hover {
+    background-color: #f1f3f5;
+}
+.rename-action {
+    border-bottom: 2rpx solid #e9ecef;
+}
+
+/* 新建会话按钮 */
+.new-session {
+    padding: 0 40rpx;
+    margin-top: 40rpx;
+    height: 90rpx;
+}
+.btn-create {
+    width: 100%;
+    padding: 28rpx 0;
+    background: linear-gradient(135deg, #4dabf7, #228be6);
+    color: #ffffff;
+    font-size: 32rpx;
+    font-weight: 500;
+    border-radius: 12rpx;
+    text-align: center;
+    box-shadow: 0 8rpx 24rpx rgba(34, 139, 230, 0.3);
+    transition: all 0.2s ease;
+}
+.btn-create:active {
+    transform: scale(0.98);
+    box-shadow: 0 4rpx 16rpx rgba(34, 139, 230, 0.3);
+}
+
+/* 遮罩层 */
+.mask {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.mask.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* 聊天区域 */
+.chat-window {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 40rpx;
+    padding-bottom: 160rpx;
+}
+.messages-container {
+    flex: 1;
+    padding-top: 40rpx;
+    overflow-y: auto;
+    padding-left: 20rpx;
+    padding-right: 20rpx;
+    min-height: 300rpx; /* 您是否尝试添加了这行代码？ */
+}
+.messages-container {
+    flex: 1;
+    padding-top: 40rpx;
+    overflow-y: auto;
+    padding-left: 20rpx;
+    padding-right: 20rpx;
+    min-height: 300px; /* 您是否尝试添加了这行代码？ */
+}
+.messages-container {
+    flex: 1;
+    padding-top: 40rpx;
+    overflow-y: auto;
+    padding-left: 20rpx;
+    padding-right: 20rpx;
+    min-height: 300px; /* 您是否尝试添加了这行代码？ */
+}
+.messages-container {
+    flex: 1;
+    padding-top: 40rpx;
+    overflow-y: auto;
+    padding-left: 20rpx;
+    padding-right: 20rpx;
+    min-height: 300px; /* 您是否尝试添加了这行代码？ */
+}
+.messages-container {
+    flex: 1;
+    padding-top: 40rpx;
+    overflow-y: auto;
+    padding-left: 20rpx;
+    padding-right: 20rpx;
+    min-height: 300px; /* 您是否尝试添加了这行代码？ */
+}
+.messages-container {
+    flex: 1;
+    padding-top: 40rpx;
+    overflow-y: auto;
+    padding-left: 20rpx;
+    padding-right: 20rpx;
+    min-height: 300px; /* 您是否尝试添加了这行代码？ */
+}
+.messages-container {
+    flex: 1;
+    padding-top: 40rpx;
+    overflow-y: auto;
+    padding-left: 20rpx;
+    padding-right: 20rpx;
+    min-height: 300px; /* 您是否尝试添加了这行代码？ */
+}
+.empty-state {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    color: #adb5bd;
+    font-size: 32rpx;
+}
+
+/* 消息项 */
+.msg-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 40rpx;
+    padding: 28rpx;
+    border-radius: 40rpx;
+    word-break: break-word;
+    position: relative;
+    max-width: calc(100% - 40rpx);
+}
+.msg-item.user {
+    background-color: #e1f5fe;
+    align-self: flex-end;
+    border: 2rpx solid #b3e5fc;
+}
+.msg-item.bot {
+    background-color: #ffffff;
+    align-self: flex-start;
+    border: 2rpx solid #e9ecef;
+}
+.msg-content {
+    font-size: 28rpx;
+    line-height: 1.6;
+    color: #2d3436;
+}
+
+/* 输入区域 */
+.input-area {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 40rpx;
+    background-color: #ffffff;
+    border-top: 2rpx solid #e9ecef;
+    z-index: 500;
+}
+.input-bar {
+    display: flex;
+    align-items: center;
+    padding: 20rpx;
+    background-color: #f8f9fa;
+    border: 2rpx solid #e9ecef;
+    border-radius: 28rpx;
+}
+.msg-input {
+    flex: 1;
+    font-size: 28rpx;
+    padding: 20rpx 28rpx;
+    border: 2rpx solid #e9ecef;
+    border-radius: 24rpx;
+    background-color: #ffffff;
+    outline: none;
+    transition: border 0.2s ease;
+}
+.msg-input:focus {
+    border-color: #4dabf7;
+    box-shadow: 0 8rpx 24rpx rgba(77, 171, 247, 0.1);
+}
+.btn-send {
+    width: 80rpx;
+    height: 80rpx;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #4dabf7;
+    margin-left: 28rpx;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.btn-send:active {
+    transform: scale(0.95);
+}
+.btn-send:hover {
+    background-color: #228be6;
+}
+.send-icon {
+    width: 0;
+    height: 0;
+    border-left: 12rpx solid transparent;
+    border-right: 12rpx solid transparent;
+    border-bottom: 18rpx solid #ffffff;
+    transform: rotate(90deg);
+}
+
+/* Loading 动画 */
+.loading {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 40rpx;
+}
+.dot-typing {
+    width: 28rpx;
+    height: 28rpx;
+    background-color: #228be6;
+    border-radius: 50%;
+    animation: dot-typing 1.5s infinite linear;
+    position: relative;
+}
+.dot-typing::before,
+.dot-typing::after {
+    content: '';
+    position: absolute;
+    width: 28rpx;
+    height: 28rpx;
+    background-color: #228be6;
+    border-radius: 50%;
+    animation: dot-typing 1.5s infinite linear;
+}
+.dot-typing::before {
+    left: -36rpx;
+    animation-delay: 0s;
+}
+.dot-typing::after {
+    left: 36rpx;
+    animation-delay: 0.75s;
+}
+@keyframes dot-typing {
+    0%, 100% {
+        opacity: 0.3;
+        transform: translateY(0);
+    }
+    50% {
+        opacity: 1;
+        transform: translateY(-16rpx);
+    }
+}

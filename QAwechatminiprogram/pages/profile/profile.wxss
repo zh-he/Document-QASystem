@@ -1,0 +1,114 @@
+.profile-container {
+    padding: 40rpx;
+    min-height: 100vh;
+    background: #f8f9fa;
+  }
+  
+  .header {
+    text-align: center;
+    margin: 60rpx 0 80rpx;
+  }
+  
+  .header .title {
+    font-size: 36rpx;
+    font-weight: 600;
+    color: #2d3436;
+    letter-spacing: 1.2rpx;
+  }
+  
+  .info-section {
+    background: #ffffff;
+    border-radius: 16rpx;
+    padding: 40rpx;
+    box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.04);
+    margin-bottom: 40rpx;
+  }
+  
+  .info-item {
+    display: flex;
+    align-items: center;
+    padding: 24rpx 0;
+    border-bottom: 2rpx solid #f1f3f5;
+  }
+  
+  .info-item:last-child {
+    border-bottom: none;
+  }
+  
+  .info-item .label {
+    width: 160rpx;
+    font-size: 28rpx;
+    color: #636e72;
+    font-weight: 500;
+  }
+  
+  .info-item .value {
+    flex: 1;
+    font-size: 28rpx;
+    color: #2d3436;
+    word-break: break-all;
+  }
+  
+  /* 新增样式: 文档列表 section */
+  .doc-section {
+    background: #ffffff;
+    border-radius: 16rpx;
+    padding: 40rpx;
+    box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.04);
+    margin-bottom: 40rpx;
+  }
+  
+  .section-header {
+    padding-bottom: 20rpx;
+    margin-bottom: 30rpx;
+    border-bottom: 2rpx solid #e9ecef;
+  }
+  
+  .section-title {
+    font-size: 32rpx;
+    font-weight: 600;
+    color: #2d3436;
+  }
+  
+  .doc-list {
+    padding-top: 10rpx;
+  }
+  
+  .doc-item {
+    padding: 20rpx 0;
+    border-bottom: 1rpx dashed #e0e0e0;
+  }
+  
+  .doc-item:last-child {
+    border-bottom: none;
+  }
+  
+  .doc-name {
+    font-size: 28rpx;
+    color: #2d3436;
+    word-break: break-all;
+  }
+  .action-section {
+    background: #ffffff;
+    border-radius: 16rpx;
+    padding: 40rpx;
+    margin-bottom: 40rpx;
+  }
+    
+  .btn-logout {
+    width: 100%;
+    height: 96rpx;
+    line-height: 96rpx;
+    background: linear-gradient(135deg, #ff6b6b, #f03e3e);
+    color: white;
+    font-size: 32rpx;
+    font-weight: 500;
+    border-radius: 12rpx;
+    box-shadow: 0 4rpx 16rpx rgba(240, 62, 62, 0.3);
+    transition: all 0.2s ease;
+  }
+  
+  .btn-logout:active {
+    transform: scale(0.98);
+    box-shadow: 0 2rpx 8rpx rgba(240, 62, 62, 0.3);
+  }

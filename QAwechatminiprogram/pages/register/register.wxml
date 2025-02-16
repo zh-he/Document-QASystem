@@ -1,0 +1,15 @@
+<view class="register-container">
+  <view class="form-item">
+    <text>用户名</text>
+    <input type="text" placeholder="输入用户名" bindinput="onInputUsername"/>
+  </view>
+  <view class="form-item">
+    <text>密码</text>
+    <input type="password" placeholder="输入密码" bindinput="onInputPassword"/>
+  </view>
+  <view class="form-item">
+    <text>确认密码</text>
+    <input type="password" placeholder="确认密码" bindinput="onInputConfirmPassword"/>
+  </view>
+  <button class="btn-register" bindtap="onRegister">注册</button>
+</view>

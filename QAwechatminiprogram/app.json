@@ -1,0 +1,33 @@
+{
+    "pages": [
+      "pages/login/login", 
+      "pages/register/register",
+      "pages/qa/qa",
+      "pages/profile/profile",
+      "pages/modify_password/modify_password"
+    ],
+    "window": {
+      "navigationBarTitleText": "LLM RAG Demo",
+      "navigationBarBackgroundColor": "#343a40",
+      "navigationBarTextStyle": "white"
+    },
+    "tabBar": {
+      "color": "#999",
+      "selectedColor": "#007bff",
+      "list": [
+        {
+          "pagePath": "pages/qa/qa",
+          "text": "问答",
+          "iconPath": "icons/chat.png",
+          "selectedIconPath": "icons/chat_active.png"
+        },
+        {
+          "pagePath": "pages/profile/profile",
+          "text": "我的",
+          "iconPath": "icons/user.png",
+          "selectedIconPath": "icons/user_active.png"
+        }
+      ]
+    }
+  }
+  

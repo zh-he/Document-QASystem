@@ -1,0 +1,40 @@
+<view class="profile-container">
+  <view class="header">
+    <text class="title">个人信息</text>
+  </view>
+
+  <view class="info-section">
+    <view class="section-header">
+        <text class="section-title">用户信息</text>
+    </view>
+    <view class="info-item">
+      <text class="label">用户名:</text>
+      <text class="value">{{ userInfo.username }}</text>
+    </view>
+    <view class="info-item">
+      <text class="label">注册时间:</text>
+      <text class="value">{{ userInfo.createdAt }}</text>
+    </view>
+  </view>
+
+  <view class="doc-section">
+    <view class="section-header">
+      <text class="section-title">后台文档列表</text>
+    </view>
+    <view class="doc-list">
+      <block wx:for="{{ userInfo.document_names }}" wx:key="index">
+        <view class="doc-item">
+          <text class="doc-name">{{ item }}</text>
+        </view>
+      </block>
+    </view>
+  </view>
+  <view class="action-section">
+    <view class="section-header" bindtap="goToModifyPassword">
+      <text class="section-title">修改密码</text>
+    </view>
+  </view>
+  <view class="button-section">
+    <button class="btn-logout" bindtap="onLogout">退出登录</button>
+  </view>
+</view>

@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="p-4">
+  <h2>角色管理</h2>
+  <p>在此页面，你可以并管理用户角色。</p>
+
+  <!-- 角色管理 -->
+  <div class="card mb-4">
+    <div class="card-header">角色管理</div>
+    <div class="card-body">
+      <table class="table table-bordered text-center">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>角色名称</th>
+            <th>描述</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for role in roles %}
+          <tr>
+            <td>{{ role.id }}</td>
+            <td>{{ role.name }}</td>
+            <td>{{ role.description }}</td>
+            <td>
+              <form method="POST" action="{{ url_for('delete_role') }}" class="d-inline">
+                <input type="hidden" name="role_id" value="{{ role.id }}">
+                <button type="submit" class="btn btn-danger btn-sm">删除</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <!-- 添加新角色 -->
+      <form method="POST" action="{{ url_for('add_role') }}">
+        <div class="mb-3">
+          <label class="form-label">新角色名称</label>
+          <input type="text" name="role_name" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">角色描述</label>
+          <input type="text" name="role_desc" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary">添加角色</button>
+      </form>
+    </div>
+  </div>
+
+
+</div>
+{% endblock %}

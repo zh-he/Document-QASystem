@@ -1,0 +1,24 @@
+<view class="login-container">
+  <!-- 卡片外壳 -->
+  <view class="form-wrapper">
+    <view class="title">欢迎登录基于LLM的RAG问答小程序</view>
+
+    <view class="form-item">
+      <text>用户名</text>
+      <input type="text" placeholder="输入用户名" bindinput="onInputUsername" />
+    </view>
+
+    <view class="form-item">
+      <text>密码</text>
+      <input type="password" placeholder="输入密码" bindinput="onInputPassword" />
+    </view>
+
+    <button class="btn-login" bindtap="onLogin">登录</button>
+    
+    <!-- 注册区域 -->
+    <view class="register-container">
+      <text>还没有账号？</text>
+      <text class="btn-register" bindtap="onRegister">点击注册</text>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,32 @@
+{
+    "miniprogramRoot": "",
+    "description": "A wechat miniprogram demo for RAG & user info",
+    "setting": {
+        "urlCheck": false,
+        "es6": true,
+        "postcss": true,
+        "babelSetting": {
+            "ignore": [],
+            "disablePlugins": [],
+            "outputPath": ""
+        },
+        "coverView": false,
+        "minified": false,
+        "enhance": false,
+        "showShadowRootInWxmlPanel": false,
+        "packNpmRelationList": [],
+        "ignoreUploadUnusedFiles": true
+    },
+    "compileType": "miniprogram",
+    "condition": {},
+    "editorSetting": {
+        "tabIndent": "insertSpaces",
+        "tabSize": 4
+    },
+    "libVersion": "3.7.7",
+    "packOptions": {
+        "ignore": [],
+        "include": []
+    },
+    "appid": "wxbc1a8afbff3a58a0"
+}

@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid p-4">
+  <h1 class="mb-4">系统概览</h1>
+
+  <!-- 行：包含两幅图表 -->
+  <div class="row">
+    <!-- 用户变化图表 -->
+    <div class="col-md-6 mb-4">
+      <div class="card">
+        <div class="card-header text-white" style="background-color: #007bff;">
+          <i class="fas fa-chart-line me-2"></i> 用户数量变化
+        </div>
+        <div class="card-body">
+          <canvas id="userChart" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- 文档变化图表 -->
+    <div class="col-md-6 mb-4">
+      <div class="card">
+        <div class="card-header text-white" style="background-color: #007bff;">
+          <i class="fas fa-file-alt me-2"></i> 文档数量变化
+        </div>
+        <div class="card-body">
+          <canvas id="docChart" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 最后更新时间（可选） -->
+  <div class="text-end mt-3 text-muted">
+    <small>数据更新于 <span id="lastUpdate"></span></small>
+  </div>
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- admin_index.html 图表部分优化（仅修改script部分） -->
+<script>
+  // 修改渲染配置，添加累计效果
+  // 更新图表和最后更新时间
+function updateLastUpdate(lastUpdate) {
+  document.getElementById('lastUpdate').textContent = lastUpdate;
+}
+
+// 统一处理渲染图表的函数
+function renderChart(chartId, labels, data, label, borderColor, backgroundColor, cumulative = true) { //  <--- 添加 cumulative 参数，默认 true
+  const ctx = document.getElementById(chartId).getContext('2d');
+  if (window[chartId] instanceof Chart) {
+    window[chartId].destroy();  // 如果是Chart实例，销毁它
+  }  // 如果图表已经存在，销毁并重新绘制
+
+  let chartData = data; // 默认情况下，图表数据就是原始数据
+
+  if (cumulative) { //  <---  如果 cumulative 为 true，则计算累计数据
+    const cumulativeData = [];
+    let total = 0;
+    data.forEach(value => {
+      total += value;
+      cumulativeData.push(total);
+    });
+    chartData = cumulativeData; // 如果需要累计，则使用 cumulativeData
+  }
+
+  window[chartId] = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: label,
+        data: chartData, // 使用 chartData (可能是原始数据，也可能是累计数据)
+        borderColor: borderColor,
+        backgroundColor: backgroundColor,
+        tension: 0.3,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: true }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: '#858796' } },
+        y: { grid: { color: '#f8f9fc' }, ticks: { color: '#858796' }, beginAtZero: true }
+      }
+    }
+  });
+}
+
+// 获取并渲染用户图表数据
+fetch('/admin/stats/users')
+  .then(response => response.json())
+  .then(data => {
+    if (data.labels.length > 0) {
+      renderChart('userChart', data.labels, data.data, '用户总数', '#4e73df', 'rgba(78, 115, 223, 0.05)');
+      updateLastUpdate(data.last_update);
+    } else {
+      document.getElementById('userChart').innerHTML = '<p>没有用户数据</p>';
+    }
+  });
+
+// 获取并渲染文档图表数据
+// 获取并渲染文档图表数据
+fetch('/admin/stats/docs')
+  .then(response => response.json())
+  .then(data => {
+    if (data.labels.length > 0) {
+      renderChart('docChart', data.labels, data.data, '文档上传数', '#1cc88a', 'rgba(28, 200, 138, 0.05)', true); //  <---  添加 false 参数，禁用累计效果
+      updateLastUpdate(data.last_update);
+    } else {
+      document.getElementById('docChart').innerHTML = '<p>没有文档数据</p>';
+    }
+  });
+</script>
+{% endblock %}
