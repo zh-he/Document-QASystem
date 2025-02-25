@@ -1,4 +1,4 @@
-## 基于LLM和微信小程序的RAG问答系统
+## 基于LLM和微信小程序的RAG文档问答系统
 
 ```mermaid
 graph TD;
