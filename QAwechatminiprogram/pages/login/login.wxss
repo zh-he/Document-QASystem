@@ -16,6 +16,7 @@
 .form-item {
     margin-bottom: 40rpx;
     position: relative;
+    margin-right: 30rpx;
 }
 
 .form-item text {
@@ -34,6 +35,9 @@ input {
     font-size: 28rpx;
     background: #ffffff;
     transition: all 0.3s ease;
+    margin: 0 auto;
+    display: block;
+    box-sizing: border-box;
 }
 
 input:focus {

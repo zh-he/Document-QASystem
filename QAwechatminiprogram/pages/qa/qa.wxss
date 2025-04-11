@@ -1,12 +1,15 @@
-/* 整体容器 */
+/* qa.wxss */
+
+/* 全局容器，使用 Flex 布局 */
 .qa-container {
-    height: 100vh;
     display: flex;
-    flex-direction: column;
-    background-color: #f8f9fa; 
+    flex-direction: column; /* 垂直排列：chat-window, input-area */
+    height: 100vh;         /* 占满整个视口高度 */
+    background-color: #f8f9fa;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    overflow: hidden;  /* 防止内部元素意外溢出 */
 }
-  
+
 /* 菜单按钮 */
 .menu-btn {
     position: fixed;
@@ -20,9 +23,8 @@
     background-color: #ffffff;
     border-radius: 12rpx;
     box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
-    z-index: 100;
+    z-index: 100; /* 确保在最上层 */
 }
-
 .menu-icon {
     width: 44rpx;
     height: 6rpx;
@@ -60,6 +62,7 @@
     z-index: 1000;
     transition: left 0.3s ease;
     padding: 80rpx 40rpx;
+    box-sizing: border-box;
     overflow-y: auto;
     border-top-right-radius: 12rpx;
     border-bottom-right-radius: 12rpx;
@@ -67,7 +70,6 @@
 .session-list.show {
     left: 0;
 }
-
 .session-header {
     font-size: 36rpx;
     font-weight: 600;
@@ -76,57 +78,41 @@
     padding-bottom: 20rpx;
     border-bottom: 2rpx solid #e9ecef;
 }
-
 .sessions-container {
     margin-top: 40rpx;
 }
-
-/* 会话项 */
 .session-item {
     display: flex;
-    justify-content: space-between; /* 保持 space-between，标题和操作按钮左右分布 */
-    border-radius: 10px;
-    margin-bottom: 10px;
+    justify-content: space-between;
+    align-items: center;
+    padding: 28rpx 24rpx;
+    border-radius: 10rpx;
+    margin-bottom: 10rpx;
     cursor: pointer;
     transition: background-color 0.2s ease;
     position: relative;
-    background-color: #f5f5f5; /*  背景色保持 */
+    background-color: #f5f5f5;
 }
-
 .session-item:hover {
     background-color: #eaeaea;
 }
-
 .session-item.active {
     background-color: #e0e0e0;
     font-weight: 500;
-    /* border: 1px solid #d0d0d0;  如果您之前有边框，可以考虑移动到内部容器 */
 }
-
-/* 会话标题输入框 */
-.session-title-input {
+.session-title {
     font-size: 32rpx;
-    height: 80rpx;
-    border-radius: 20rpx;
     color: #2d3436;
     flex: 1;
-    padding: 0 24rpx;
-    transition: all 0.3s ease;
-    outline: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
-.session-title-input:focus {
-    border-color: #4dabf7;
-    box-shadow: 0 8rpx 24rpx rgba(77, 171, 247, 0.1);
-}
-
-/* 操作菜单容器 */
 .session-actions {
     position: relative;
     display: flex;
     align-items: center;
 }
-
-/* 三点按钮 */
 .btn-more {
     width: 48rpx;
     height: 48rpx;
@@ -145,8 +131,6 @@
     color: #ffffff;
     line-height: 1;
 }
-
-/* 操作菜单（重命名/删除） */
 .actions-menu {
     position: absolute;
     top: 120%;
@@ -181,12 +165,10 @@
 .rename-action {
     border-bottom: 2rpx solid #e9ecef;
 }
-
-/* 新建会话按钮 */
 .new-session {
     padding: 0 40rpx;
     margin-top: 40rpx;
-    height: 90rpx;
+    height: 90rpx; /* 固定新建会话按钮区域高度 */
 }
 .btn-create {
     width: 100%;
@@ -223,177 +205,90 @@
     visibility: visible;
 }
 
-/* 聊天区域 */
+/* 聊天区域 - Flex 子项，占据剩余空间 */
 .chat-window {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 40rpx;
-    padding-bottom: 160rpx;
+    flex: 1;                 /* 关键：占据父容器剩余空间 */
+    overflow: hidden;        /* 关键：防止内部 scroll-view 溢出影响布局 */
+    display: flex;           /* 使其成为 flex 容器 */
+    flex-direction: column;  /* 内部元素垂直排列 */
+    background-color: #f8f9fa; /* 背景色 */
 }
+
+/* 消息列表容器 (scroll-view) - 占据 chat-window 的全部空间 */
 .messages-container {
-    flex: 1;
-    padding-top: 40rpx;
-    overflow-y: auto;
-    padding-left: 20rpx;
-    padding-right: 20rpx;
-    min-height: 300rpx; /* 您是否尝试添加了这行代码？ */
+    flex: 1;                 /* 关键：占据 chat-window 的剩余空间 */
+    width: 100%;             /* 宽度占满 */
+    overflow-y: auto;        /* 由 scroll-y="true" 处理 */
+    box-sizing: border-box;  /* padding 包含在宽高内 */
+    padding: 40rpx;          /* 内边距，给消息和底部留出空间 */
+    padding-bottom: 20rpx; /* 底部可以小一点，避免和 loading/输入框太近 */
+    background-color: #f8f9fa;
+    -webkit-overflow-scrolling: touch; /* iOS 优化，使滚动更流畅 */
 }
-.messages-container {
-    flex: 1;
-    padding-top: 40rpx;
-    overflow-y: auto;
-    padding-left: 20rpx;
-    padding-right: 20rpx;
-    min-height: 300px; /* 您是否尝试添加了这行代码？ */
-}
-.messages-container {
-    flex: 1;
-    padding-top: 40rpx;
-    overflow-y: auto;
-    padding-left: 20rpx;
-    padding-right: 20rpx;
-    min-height: 300px; /* 您是否尝试添加了这行代码？ */
-}
-.messages-container {
-    flex: 1;
-    padding-top: 40rpx;
-    overflow-y: auto;
-    padding-left: 20rpx;
-    padding-right: 20rpx;
-    min-height: 300px; /* 您是否尝试添加了这行代码？ */
-}
-.messages-container {
-    flex: 1;
-    padding-top: 40rpx;
-    overflow-y: auto;
-    padding-left: 20rpx;
-    padding-right: 20rpx;
-    min-height: 300px; /* 您是否尝试添加了这行代码？ */
-}
-.messages-container {
-    flex: 1;
-    padding-top: 40rpx;
-    overflow-y: auto;
-    padding-left: 20rpx;
-    padding-right: 20rpx;
-    min-height: 300px; /* 您是否尝试添加了这行代码？ */
-}
-.messages-container {
-    flex: 1;
-    padding-top: 40rpx;
-    overflow-y: auto;
-    padding-left: 20rpx;
-    padding-right: 20rpx;
-    min-height: 300px; /* 您是否尝试添加了这行代码？ */
-}
+
+/* 空状态提示 */
 .empty-state {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100%;
     color: #adb5bd;
     font-size: 32rpx;
+    margin-top: 100rpx;
+    width: 100%;
+    flex: 1; /* 让空状态也占满空间 */
 }
 
-/* 消息项 */
-.msg-item {
+/* 消息外层容器 */
+.msg-wrapper {
+    width: 100%;
     display: flex;
-    align-items: flex-start;
-    margin-bottom: 40rpx;
-    padding: 28rpx;
-    border-radius: 40rpx;
+    margin-bottom: 40rpx; /* 增加消息间距 */
+}
+.msg-wrapper.user {
+    justify-content: flex-end;
+}
+.msg-wrapper.bot, .msg-wrapper.assistant { /* 兼容 assistant role */
+    justify-content: flex-start;
+}
+
+/* 内层消息气泡 */
+.msg-item {
+    max-width: 85%;
+    padding: 24rpx 32rpx; /* 增加内边距 */
+    border-radius: 24rpx;
     word-break: break-word;
-    position: relative;
-    max-width: calc(100% - 40rpx);
+    box-sizing: border-box;
+    box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
 }
 .msg-item.user {
-    background-color: #e1f5fe;
-    align-self: flex-end;
-    border: 2rpx solid #b3e5fc;
+    background-color: #e1f5fe; /* 蓝色气泡 */
+    border-top-right-radius: 8rpx;
+    color: #0277bd;
 }
-.msg-item.bot {
-    background-color: #ffffff;
-    align-self: flex-start;
-    border: 2rpx solid #e9ecef;
-}
-.msg-content {
-    font-size: 28rpx;
-    line-height: 1.6;
-    color: #2d3436;
+.msg-item.assistant {
+    background-color: #ffffff; /* 白色气泡 */
+    border-top-left-radius: 8rpx;
+    color: #343a40;
 }
 
-/* 输入区域 */
-.input-area {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 40rpx;
-    background-color: #ffffff;
-    border-top: 2rpx solid #e9ecef;
-    z-index: 500;
-}
-.input-bar {
-    display: flex;
-    align-items: center;
-    padding: 20rpx;
-    background-color: #f8f9fa;
-    border: 2rpx solid #e9ecef;
-    border-radius: 28rpx;
-}
-.msg-input {
-    flex: 1;
-    font-size: 28rpx;
-    padding: 20rpx 28rpx;
-    border: 2rpx solid #e9ecef;
-    border-radius: 24rpx;
-    background-color: #ffffff;
-    outline: none;
-    transition: border 0.2s ease;
-}
-.msg-input:focus {
-    border-color: #4dabf7;
-    box-shadow: 0 8rpx 24rpx rgba(77, 171, 247, 0.1);
-}
-.btn-send {
-    width: 80rpx;
-    height: 80rpx;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #4dabf7;
-    margin-left: 28rpx;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.2s ease;
-}
-.btn-send:active {
-    transform: scale(0.95);
-}
-.btn-send:hover {
-    background-color: #228be6;
-}
-.send-icon {
-    width: 0;
-    height: 0;
-    border-left: 12rpx solid transparent;
-    border-right: 12rpx solid transparent;
-    border-bottom: 18rpx solid #ffffff;
-    transform: rotate(90deg);
+/* 气泡文字 */
+.msg-content {
+    font-size: 30rpx;
+    line-height: 1.6;
 }
 
 /* Loading 动画 */
 .loading {
     display: flex;
-    justify-content: flex-start;
+    justify-content: flex-start; /* Loading 靠左 */
     align-items: center;
-    padding: 40rpx;
+    padding: 20rpx 40rpx; /* 调整 loading 的内边距 */
+    padding-left: 72rpx; /* 与 assistant 消息对齐 */
 }
 .dot-typing {
-    width: 28rpx;
-    height: 28rpx;
-    background-color: #228be6;
+    width: 16rpx;
+    height: 16rpx;
+    background-color: #adb5bd;
     border-radius: 50%;
     animation: dot-typing 1.5s infinite linear;
     position: relative;
@@ -402,27 +297,84 @@
 .dot-typing::after {
     content: '';
     position: absolute;
-    width: 28rpx;
-    height: 28rpx;
-    background-color: #228be6;
+    width: 16rpx;
+    height: 16rpx;
+    background-color: #adb5bd;
     border-radius: 50%;
     animation: dot-typing 1.5s infinite linear;
 }
 .dot-typing::before {
-    left: -36rpx;
+    left: -24rpx;
     animation-delay: 0s;
 }
 .dot-typing::after {
-    left: 36rpx;
+    left: 24rpx;
     animation-delay: 0.75s;
 }
 @keyframes dot-typing {
     0%, 100% {
-        opacity: 0.3;
-        transform: translateY(0);
+      opacity: 0.3;
+      transform: scale(0.7);
     }
     50% {
-        opacity: 1;
-        transform: translateY(-16rpx);
+      opacity: 1;
+      transform: scale(1);
     }
+}
+
+/* 输入区域 - Flex 子项，固定高度 */
+.input-area {
+    width: 100%;
+    padding: 20rpx 30rpx; /* 调整内边距 */
+    padding-bottom: calc(20rpx + env(safe-area-inset-bottom)); /* 适配 iPhone X 等底部安全区域 */
+    background-color: #ffffff;
+    border-top: 1rpx solid #e9ecef;
+    box-sizing: border-box;
+}
+
+.input-bar {
+    display: flex;
+    align-items: flex-end; /* 对齐底部，特别是 textarea auto-height 时 */
+    padding: 15rpx 20rpx; /* 调整内边距 */
+    background-color: #f8f9fa;
+    border: 1rpx solid #e9ecef;
+    border-radius: 40rpx; /* 更圆润 */
+    box-sizing: border-box;
+}
+.msg-input {
+    flex: 1; /* 占据剩余宽度 */
+    min-height: 40rpx; /* 最小高度 */
+    max-height: 200rpx; /* 最大高度，超过会滚动 */
+    line-height: 1.5;
+    padding: 10rpx 0; /* 垂直内边距，左右由 input-bar 控制 */
+    border: none; /* 移除边框，由 input-bar 提供 */
+    background-color: transparent; /* 透明背景 */
+    outline: none;
+    box-sizing: border-box;
+}
+.btn-send {
+    width: 70rpx;
+    height: 70rpx;
+    margin-left: 20rpx;
+    border-radius: 50%;
+    background-color: #4dabf7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    flex-shrink: 0; /* 防止发送按钮被压缩 */
+}
+.btn-send:hover {
+    background-color: #228be6;
+}
+.btn-send:active {
+    transform: scale(0.95);
+}
+.send-icon {
+    width: 0;
+    height: 0;
+    border-left: 12rpx solid transparent;
+    border-right: 12rpx solid transparent;
+    border-bottom: 18rpx solid #ffffff;
+    transform: rotate(90deg) translateX(2rpx); /* 微调使箭头居中 */
 }
