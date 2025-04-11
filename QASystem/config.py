@@ -19,8 +19,9 @@ class Config:
     JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY") or "替换secret key" #  从环境变量读取 JWT 密钥，或设置默认值
 
     # 向量库配置
-    VECTORSTORE_DIR = os.environ.get("VECTORSTORE_DIR") or os.path.join(basedir, "vectorstore") # 从环境变量读取或设置默认值
-    EMBEDDING_MODEL_PATH = os.environ.get("EMBEDDING_MODEL_PATH") # 从环境变量读取或设置默认值
+    VECTORSTORE_DIR = os.environ.get("VECTORSTORE_DIR") or os.path.join(basedir, "vectorstore")  # 从环境变量读取或设置默认值
+    EMBEDDING_MODEL_PATH = os.environ.get("EMBEDDING_MODEL_PATH",
+                                          "Your_Embedding_Path")  # 从环境变量读取或设置默认值
 
     # 文档上传配置
     UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER") or os.path.join(basedir, "documents") # 从环境变量读取或设置默认值
