@@ -52,7 +52,7 @@ Page({
             username: res.username,
             // 格式化注册时间，只取年月日
             createdAt: res.created_at ? res.created_at.substring(0, 10) : '',
-            document_names: res.document_names,
+            document_names: res.document_names || [],
           },
         });
       } else {
@@ -75,6 +75,13 @@ Page({
     }
   },
 
+  // 前往修改密码页面
+  goToModifyPassword() {
+    wx.navigateTo({
+      url: '/pages/modify_password/modify_password',
+    });
+  },
+
   // 退出登录
   onLogout() {
     wx.showModal({
@@ -89,12 +96,5 @@ Page({
         }
       },
     });
-  },
-
-goToModifyPassword: function() {
-    wx.navigateTo({
-      url: '/pages/modify_password/modify_password',
-    });
-  },
+  }
 });
-

@@ -29,11 +29,12 @@
       </block>
     </view>
   </view>
-  <view class="action-section">
-    <view class="section-header" bindtap="goToModifyPassword">
-      <text class="section-title">修改密码</text>
-    </view>
+  
+  <view class="action-card" bindtap="goToModifyPassword">
+    <text class="action-text">修改密码</text>
+    <text class="arrow">›</text>
   </view>
+  
   <view class="button-section">
     <button class="btn-logout" bindtap="onLogout">退出登录</button>
   </view>
