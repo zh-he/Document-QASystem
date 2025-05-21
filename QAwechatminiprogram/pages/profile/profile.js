@@ -46,14 +46,14 @@ Page({
       console.log("API 响应完整 res:", res);
 
       // 判断返回数据中是否包含 username 字段
-      if (res && res.username) {
+      if (res && res.documents) {
         this.setData({
           userInfo: {
-            username: res.username,
-            // 格式化注册时间，只取年月日
-            createdAt: res.created_at ? res.created_at.substring(0, 10) : '',
-            document_names: res.document_names || [],
-          },
+            username:  res.username,
+            createdAt: res.created_at ? res.created_at.slice(0,10) : "",
+            ragDocs:      res.documents.rag || [],
+            lightRagDocs: res.documents.lightrag || []
+          }
         });
       } else {
         wx.showToast({

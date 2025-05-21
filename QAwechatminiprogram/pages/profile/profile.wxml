@@ -16,20 +16,42 @@
       <text class="value">{{ userInfo.createdAt }}</text>
     </view>
   </view>
-
   <view class="doc-section">
-    <view class="section-header">
-      <text class="section-title">后台文档列表</text>
+  <view class="section-header">
+    <text class="section-title">后台文档列表</text>
+  </view>
+
+  <!-- RAG 文档 -->
+  <view class="doc-subsection">
+    <view class="subsection-header">
+      <text class="subsection-title">RAG 文档</text>
     </view>
-    <view class="doc-list">
-      <block wx:for="{{ userInfo.document_names }}" wx:key="index">
-        <view class="doc-item">
-          <text class="doc-name">{{ item }}</text>
-        </view>
-      </block>
+    <block wx:for="{{ userInfo.ragDocs }}" wx:key="index">
+      <view class="doc-item">
+        <text class="doc-name">{{ item }}</text>
+      </view>
+    </block>
+    <view wx:if="{{ userInfo.ragDocs.length === 0 }}" class="no-docs">
+      <text class="doc-name">暂无 RAG 文档</text>
     </view>
   </view>
-  
+
+  <!-- LightRAG 文档 -->
+  <view class="doc-subsection">
+    <view class="subsection-header">
+      <text class="subsection-title">LightRAG 文档</text>
+    </view>
+    <block wx:for="{{ userInfo.lightRagDocs }}" wx:key="index">
+      <view class="doc-item">
+        <text class="doc-name">{{ item }}</text>
+      </view>
+    </block>
+    <view wx:if="{{ userInfo.lightRagDocs.length === 0 }}" class="no-docs">
+      <text class="doc-name">暂无 LightRAG 文档</text>
+    </view>
+  </view>
+</view>
+
   <view class="action-card" bindtap="goToModifyPassword">
     <text class="action-text">修改密码</text>
     <text class="arrow">›</text>

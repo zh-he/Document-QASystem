@@ -1,7 +1,7 @@
 <view class="login-container">
   <!-- 卡片外壳 -->
   <view class="form-wrapper">
-    <view class="title">欢迎登录基于LLM的领域知识问答小程序</view>
+    <view class="title">基于大语言模型的工业设备故障诊断问答小程序</view>
 
     <view class="form-item">
       <text>用户名</text>

@@ -5,7 +5,7 @@ from datetime import datetime
 
 from flask import Flask, request, jsonify, render_template, redirect, url_for, flash, current_app
 from flask_cors import CORS
-from flask_jwt_extended import create_access_token, JWTManager, jwt_required, get_jwt_identity
+from flask_jwt_extended import create_access_token, JWTManager, jwt_required, get_jwt_identity, create_refresh_token
 from flask_login import (
     LoginManager, login_user, logout_user, login_required, current_user
 )
@@ -117,16 +117,37 @@ def index():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_page():
+    # 若已登录直接去后台
     if current_user.is_authenticated:
         return redirect(url_for('admin_index'))
+
+    # 仅处理 POST
     if request.method == 'POST':
+        # 既兼容表单，也兼容 fetch XHR
         username = request.form.get('username')
         password = request.form.get('password')
+
         user = User.query.filter_by(username=username).first()
         if user and user.check_password(password):
+            # mini_user 未审批阻止登录
+            if user.role.name == 'mini_user' and not user.approved:
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return jsonify({"error": "该用户尚未批准"}), 403
+                return render_template('login.html', error="该用户尚未批准")
+
             login_user(user)
+            # XHR 请求返回 200 让前端自行跳转
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return jsonify({"message": "ok"}), 200
+            # 普通浏览器表单：302 跳后台
             return redirect(url_for('admin_index'))
+
+        # 账号或密码错误
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({"error": "用户名或密码错误"}), 401
         return render_template('login.html', error="用户名或密码错误，请重试")
+
+    # GET
     return render_template('login.html')
 
 @app.route('/logout', methods=['GET', 'POST'])
@@ -150,11 +171,31 @@ def admin_index():
 @login_required
 def manage_docs():
     """文档管理页面"""
-    doc_dir = app.config['UPLOAD_FOLDER']
+    # 确保上传目录存在（仅用于存储文件，分页和统计从 DB 来）
+    doc_dir = current_app.config['UPLOAD_FOLDER']
     if not os.path.exists(doc_dir):
         os.makedirs(doc_dir)
-    file_list = os.listdir(doc_dir)
-    return render_template('manage_docs.html', file_list=file_list)
+
+    total_docs = Document.query.count()
+    pdf_docs   = Document.query.filter(Document.filename.ilike('%.pdf')).count()
+    other_docs = total_docs - pdf_docs
+
+    page = request.args.get('page', 1, type=int)
+    pagination = (
+        Document.query
+                .order_by(Document.created_at.desc())
+                .paginate(page=page, per_page=10, error_out=False)
+    )
+
+    # 3. 把所有变量传给模板
+    return render_template(
+        'manage_docs.html',
+        total_docs=total_docs,
+        pdf_docs=pdf_docs,
+        other_docs=other_docs,
+        pagination=pagination,
+        custom_regex=request.args.get('custom_regex', '')
+    )
 
 @app.route('/admin/docs/upload', methods=['POST'])
 @login_required
@@ -178,7 +219,7 @@ def upload_doc_page():
             # 保存文档记录到数据库
             new_doc = Document(
                 filename=filename,
-                user_id=current_user.id
+                uploader_id=current_user.id
             )
             db.session.add(new_doc)
 
@@ -285,24 +326,21 @@ def add_role():
     flash("新角色添加成功", "success")
     return redirect(url_for('manage_roles'))
 
-@app.route('/admin/roles/delete_role', methods=['POST'])
+@app.route("/admin/roles/delete_role", methods=["POST"])
 @login_required
 def delete_role():
-    if not current_user.role or current_user.role.name != 'super_admin':
-        flash('权限不足', 'danger')
-        return redirect(url_for('manage_roles'))
-    role_id = request.form.get('role_id')
-    role = UserRole.query.get(role_id)
-    if not role:
-        flash("角色不存在", "danger")
-        return redirect(url_for('manage_roles'))
-    if role.users:
-        flash("无法删除，有用户正在使用该角色", "danger")
-        return redirect(url_for('manage_roles'))
-    db.session.delete(role)
-    db.session.commit()
-    flash("角色删除成功", "success")
-    return redirect(url_for('manage_roles'))
+    if current_user.role.name != "super_admin":
+        flash("权限不足", "danger")
+        return redirect(url_for("manage_roles"))
+    rid = request.form.get("role_id")
+    role = UserRole.query.get(rid)
+    if role and not role.users.count():
+        db.session.delete(role)
+        db.session.commit()
+        flash("角色删除成功", "success")
+    else:
+        flash("角色不存在或有人使用", "warning")
+    return redirect(url_for("manage_roles"))
 
 @app.route('/admin/users', methods=['GET'])
 @login_required
@@ -417,33 +455,61 @@ def reject_user():
 @app.route('/admin/stats/users', methods=['GET'])
 @login_required
 def api_stats_users():
-    results = db.session.query(
-        func.date(User.created_at).label('date'),
-        func.count(User.id).label('count')
-    ).group_by(func.date(User.created_at)).all()
-    labels = [datetime.strptime(result.date, '%Y-%m-%d').strftime("%m月%d日") for result in results]
-    data = [result.count for result in results]
+    # 1. 查询并按日期升序
+    results = (
+        db.session.query(
+            func.date(User.created_at).label('date'),
+            func.count(User.id).label('count')
+        )
+        .group_by(func.date(User.created_at))
+        .order_by(func.date(User.created_at))
+        .all()
+    )
+
+    # 2. 构造三条数组：dates（ISO 用于计算）、labels（中文展示）、data
+    dates  = [r.date for r in results]  # r.date 已经是 'YYYY-MM-DD' 字符串
+    labels = [
+        datetime.strptime(r.date, "%Y-%m-%d").strftime("%m月%d日")
+        for r in results
+    ]
+    data   = [r.count for r in results]
+
     return jsonify({
-        "labels": labels,
-        "data": data,
+        "dates":       dates,
+        "labels":      labels,
+        "data":        data,
         "last_update": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     })
+
 
 @app.route('/admin/stats/docs', methods=['GET'])
 @login_required
 def api_stats_docs():
-    results = db.session.query(
-        func.date(Document.created_at).label('date'),
-        func.count(Document.id).label('count')
-    ).group_by(func.date(Document.created_at)).all()
-    labels = [datetime.strptime(result.date, '%Y-%m-%d').strftime("%m月%d日") for result in results]
-    data = [result.count for result in results]
+    # 1. 查询并按日期升序
+    results = (
+        db.session.query(
+            func.date(Document.created_at).label('date'),
+            func.count(Document.id).label('count')
+        )
+        .group_by(func.date(Document.created_at))
+        .order_by(func.date(Document.created_at))
+        .all()
+    )
+
+    # 2. 构造 dates、labels、data
+    dates  = [r.date for r in results]
+    labels = [
+        datetime.strptime(r.date, "%Y-%m-%d").strftime("%m月%d日")
+        for r in results
+    ]
+    data   = [r.count for r in results]
+
     return jsonify({
-        "labels": labels,
-        "data": data,
+        "dates":       dates,
+        "labels":      labels,
+        "data":        data,
         "last_update": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     })
-
 # ---------------------------
 # 小程序 API 接口
 # ---------------------------
@@ -459,14 +525,23 @@ def api_login():
         elif user.role.name == 'mini_user' and user.approved:
             login_user(user)
             access_token = create_access_token(identity=user.id)
+            refresh_token = create_refresh_token(identity=user.id)
             return jsonify({
                 "message": "登录成功",
                 "role": user.role.name if user.role else None,
                 "approved": user.approved,
-                "token": access_token
+                "access_token": access_token,
+                "refresh_token": refresh_token
             }), 200
     else:
         return jsonify({"error": "无效的用户名或密码"}), 401
+
+@app.route('/api/token/refresh', methods=['POST'])
+@jwt_required(refresh=True)
+def refresh_token():
+    current_user_id = get_jwt_identity()
+    new_access = create_access_token(identity=current_user_id)
+    return jsonify({"access_token": new_access}), 200
 
 @app.route('/api/sessions/create', methods=['POST'])
 @jwt_required()
@@ -475,10 +550,12 @@ def create_session():
     user = User.query.get(current_user_id)
     if not user:
         return jsonify({"error": "用户不存在"}), 404
+    first_msg = (request.json or {}).get('firstMessage', "")
+    title = generate_session_title(first_msg)
     try:
         new_session = Session(
             user_id=user.id,
-            title="新对话",
+            title=title,
             created_at=datetime.utcnow()
         )
         db.session.add(new_session)
@@ -486,7 +563,7 @@ def create_session():
         current_app.logger.info(f"New session created: {new_session.to_dict()}")
         return jsonify({
             "sessionId": new_session.id,
-            "title": new_session.title,
+            "title": title,
             "createdAt": new_session.created_at.isoformat()
         }), 201
     except Exception as e:
@@ -496,7 +573,7 @@ def create_session():
         }), 500
 
 def generate_session_title(message_content):
-    title_length = 6
+    title_length = 8
     title = message_content[:title_length]
     if len(message_content) > title_length:
         title += "..."
@@ -736,4 +813,4 @@ def change_password():
         return jsonify({"success": False, "error": "服务器错误，请稍后重试"}), 200
 
 if __name__ == '__main__':
-    app.run(debug=True, use_reloader=False)
+    app.run(debug=True, use_reloader=False, port=8000)
