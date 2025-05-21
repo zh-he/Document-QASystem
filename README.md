@@ -88,23 +88,22 @@ miniprogram/
 
 2. 小程序展示
 
-<div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px;">
-  <img src="README.assets/小程序登录页面.png" alt="图1"
-       style="width: 24%; height: 640px; object-fit: cover; border-radius: 6px;">
-  <img src="README.assets/小程序注册页面.png" alt="图2"
-       style="width: 24%; height: 640px; object-fit: cover; border-radius: 6px;">
-  <img src="README.assets/小程序问答页面.png" alt="图3"
-       style="width: 24%; height: 640px; object-fit: cover; border-radius: 6px;">
-  <img src="README.assets/小程序我的页面.png" alt="图4"
-       style="width: 24%; height: 640px; object-fit: cover; border-radius: 6px;">
+<div style="
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 10px;
+">
+  <img src="README.assets/小程序登录页面.png" alt="登录页"
+       style="width: 22%; height: auto; object-fit: cover; border-radius: 6px;" />
+  <img src="README.assets/小程序注册页面.png" alt="注册页"
+       style="width: 22%; height: auto; object-fit: cover; border-radius: 6px;" />
+  <img src="README.assets/小程序问答页面.png" alt="问答页"
+       style="width: 22%; height: auto; object-fit: cover; border-radius: 6px;" />
+  <img src="README.assets/小程序我的页面.png" alt="我的页"
+       style="width: 22%; height: auto; object-fit: cover; border-radius: 6px;" />
 </div>
-
-
-
-
-
-
-
 
 ## 使用
 
