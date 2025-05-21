@@ -70,7 +70,7 @@ miniprogram/
 
 ##  系统框架图
 
-![系统框架图](README.assets/系统框架图 .png)
+![系统框架图](README.assets/系统框架图.png)
 
 ## 系统展示
 
