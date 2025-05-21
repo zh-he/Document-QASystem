@@ -96,14 +96,15 @@ miniprogram/
   gap: 10px;
 ">
   <img src="README.assets/小程序登录页面.png" alt="登录页"
-       style="width: 22%; height: auto; object-fit: cover; border-radius: 6px;" />
+       style="width: 24%; height: auto; object-fit: cover; border-radius: 6px;" />
   <img src="README.assets/小程序注册页面.png" alt="注册页"
-       style="width: 22%; height: auto; object-fit: cover; border-radius: 6px;" />
+       style="width: 24%; height: auto; object-fit: cover; border-radius: 6px;" />
   <img src="README.assets/小程序问答页面.png" alt="问答页"
-       style="width: 22%; height: auto; object-fit: cover; border-radius: 6px;" />
+       style="width: 24%; height: auto; object-fit: cover; border-radius: 6px;" />
   <img src="README.assets/小程序我的页面.png" alt="我的页"
-       style="width: 22%; height: auto; object-fit: cover; border-radius: 6px;" />
+       style="width: 24%; height: auto; object-fit: cover; border-radius: 6px;" />
 </div>
+
 
 ## 使用
 
