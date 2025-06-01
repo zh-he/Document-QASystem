@@ -27,7 +27,7 @@ class Config:
     # 向量库配置
     VECTORSTORE_DIR = os.environ.get("VECTORSTORE_DIR") or os.path.join(basedir, "vectorstore")  # 从环境变量读取或设置默认值
     EMBEDDING_MODEL_PATH = os.environ.get("EMBEDDING_MODEL_PATH",
-                                          "Your Embedding")  # 从环境变量读取或设置默认值
+                                          "C:/Users/hzh/Desktop/Learn/硕士毕业论文/毕业论文/embedding/bge-large-zh-v1.5")  # 从环境变量读取或设置默认值
 
     # 文档上传配置
     UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER") or os.path.join(basedir, "documents")  # 从环境变量读取或设置默认值
