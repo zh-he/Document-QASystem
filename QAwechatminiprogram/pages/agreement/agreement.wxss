@@ -1,0 +1,28 @@
+.agreement-container {
+    flex: 1;
+    background: #f8f9fa;
+  }
+  
+  .agreement-content {
+    padding: 30rpx;
+    box-sizing: border-box;
+    height: 100vh;
+  }
+  
+  .section {
+    margin-bottom: 30rpx;
+  }
+  
+  .section-title {
+    font-size: 32rpx;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 12rpx;
+  }
+  
+  .section-text {
+    font-size: 28rpx;
+    line-height: 1.6;
+    color: #4a4a4a;
+  }
+  

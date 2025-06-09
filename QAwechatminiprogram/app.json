@@ -2,18 +2,19 @@
     "pages": [
       "pages/login/login", 
       "pages/register/register",
+      "pages/agreement/agreement",
       "pages/qa/qa",
       "pages/profile/profile",
       "pages/modify_password/modify_password"
     ],
     "window": {
-      "navigationBarTitleText": "LLM RAG Demo",
+      "navigationBarTitleText": "",
       "navigationBarBackgroundColor": "#343a40",
       "navigationBarTextStyle": "white"
     },
     "tabBar": {
       "color": "#999",
-      "selectedColor": "#007bff",
+      "selectedColor": "#3367d6",
       "list": [
         {
           "pagePath": "pages/qa/qa",

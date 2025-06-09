@@ -1,100 +1,80 @@
-// profile.js
-import { request } from "../../utils/request"; // 引入封装的 request 方法
+import {
+    request
+} from "../../utils/request";
 const app = getApp();
 
 Page({
-  data: {
-    userInfo: {},
-  },
+    data: {
+        userInfo: {}
+    },
 
-  async onLoad() {
-    await this.fetchProfile();
-  },
+    async onLoad() {
+        await this.fetchProfile();
+    },
 
-  // 获取个人信息
-  async fetchProfile() {
-    wx.showLoading({
-      title: '加载中...',
-      mask: true,
-    });
-
-    // 从本地存储中获取 token
-    const token = wx.getStorageSync('token');
-    console.log("Token:", token);
-    if (!token) {
-      wx.showToast({
-        title: '未获取到 token，请重新登录',
-        icon: 'none',
-        duration: 2000,
-      });
-      wx.redirectTo({
-        url: '/pages/login/login',
-      });
-      wx.hideLoading();
-      return;
-    }
-
-    try {
-      const res = await request({
-        url: '/api/profile',
-        method: 'GET',
-        header: {
-          'Authorization': 'Bearer ' + token,
-          'Content-Type': 'application/json',
-        },
-      });
-      console.log("API 响应完整 res:", res);
-
-      // 判断返回数据中是否包含 username 字段
-      if (res && res.documents) {
-        this.setData({
-          userInfo: {
-            username:  res.username,
-            createdAt: res.created_at ? res.created_at.slice(0,10) : "",
-            ragDocs:      res.documents.rag || [],
-            lightRagDocs: res.documents.lightrag || []
-          }
+    async fetchProfile() {
+        wx.showLoading({
+            title: '加载中...',
+            mask: true
         });
-      } else {
-        wx.showToast({
-          title: '加载个人信息失败',
-          icon: 'none',
-          duration: 2000,
-        });
-      }
-    } catch (e) {
-      console.error("请求失败:", e);
-      wx.showToast({
-        title: '网络错误，请稍后重试',
-        icon: 'none',
-        duration: 2000,
-      });
-    } finally {
-      wx.hideLoading();
-      console.log("请求 complete，隐藏 loading");
-    }
-  },
 
-  // 前往修改密码页面
-  goToModifyPassword() {
-    wx.navigateTo({
-      url: '/pages/modify_password/modify_password',
-    });
-  },
+        try {
+            const res = await request({
+                url: '/api/profile',
+                method: 'GET'
+            });
+            console.log("API 响应:", res);
 
-  // 退出登录
-  onLogout() {
-    wx.showModal({
-      title: '确认退出登录？',
-      content: '退出后将无法使用问答功能',
-      success: res => {
-        if (res.confirm) {
-          wx.removeStorageSync('token'); // 移除 token
-          wx.reLaunch({
-            url: '/pages/login/login', // 跳转回登录页
-          });
+            if (res && res.username) {
+                this.setData({
+                    userInfo: {
+                        username: res.username,
+                        createdAt: res.created_at ? res.created_at.slice(0, 10) : '',
+                        document_names: res.document_names || []
+                    }
+                });
+            } else {
+                wx.showToast({
+                    title: '加载个人信息失败',
+                    icon: 'none'
+                });
+            }
+        } catch (e) {
+            console.error("请求失败:", e);
+            wx.showToast({
+                title: '网络或身份已过期，请重新登录',
+                icon: 'none'
+            });
+            wx.reLaunch({
+                url: '/pages/login/login'
+            });
+        } finally {
+            wx.hideLoading();
         }
-      },
-    });
-  }
+    },
+
+    goToModifyPassword() {
+        wx.navigateTo({
+            url: '/pages/modify_password/modify_password'
+        });
+    },
+
+    onLogout() {
+        wx.showModal({
+            title: '确认退出登录？',
+            content: '退出后将无法使用问答功能',
+            success: res => {
+                if (res.confirm) {
+                    const app = getApp();
+                    app.globalData.accessToken = '';
+                    app.globalData.refreshToken = '';
+                    wx.clearStorageSync('accessToken');
+                    wx.clearStorageSync('refreshToken');
+                    wx.reLaunch({
+                        url: '/pages/login/login'
+                    });
+                }
+            }
+        });
+    }
 });

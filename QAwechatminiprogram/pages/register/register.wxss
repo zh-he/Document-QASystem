@@ -1,49 +1,78 @@
-/* register.wxss */
-
-/* 容器样式 */
 .register-container {
-    padding: 40rpx;
     min-height: 100vh;
-    background: #f8f9fa;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0;
+    box-sizing: border-box;
   }
   
-  /* 标题样式（如需要，可在页面中添加 .register-title） */
-  .register-title {
+  .title-section {
+    width: 100%;
+    padding: 40rpx 0;
+    margin-top: 20rpx;
+    margin-bottom: 30rpx;
+  }
+  
+  .title {
     font-size: 36rpx;
     font-weight: 600;
-    color: #2d3436;
+    color: #2c3e50;
     text-align: center;
-    margin: 60rpx 0 80rpx;
-    letter-spacing: 1.2rpx;
+    letter-spacing: 2rpx;
+    line-height: 1.4;
   }
   
-  /* 表单项容器：垂直排列 */
-  .form-item {
-    margin-bottom: 40rpx;
-    position: relative;
-  }
-  
-  /* 表单标签 */
-  .form-item text {
-    display: block;
-    font-size: 28rpx;
-    color: #636e72;
-    margin-bottom: 16rpx;
-  }
-  
-  /* 输入框 —— 参考 login 页面的样式 */
-  input {
-    width: 100%;
-    height: 88rpx;
-    padding: 0 24rpx;
-    margin: 0 auto;
-    border: 2rpx solid #e9ecef;
-    border-radius: 12rpx;
-    font-size: 28rpx;
-    background: #ffffff;
-    transition: all 0.3s ease;
+  .form-card {
+    width: 90%;
+    max-width: 650rpx;
+    background-color: #ffffff;
+    border-radius: 20rpx;
+    box-shadow: 0 8rpx 30rpx rgba(0, 0, 0, 0.08);
+    padding: 40rpx 30rpx;
     box-sizing: border-box;
+    margin: 0 auto;
+    margin-bottom: 40rpx;
+  }
+  
+  .form-item {
+    margin-bottom: 30rpx;
+  }
+  
+  .label {
     display: block;
+    font-size: 28rpx;
+    color: #34495e;
+    margin-bottom: 12rpx;
+    font-weight: 500;
+  }
+  
+  .input-container {
+    display: flex;
+    align-items: center;
+    border: 2rpx solid #dfe6e9;
+    border-radius: 12rpx;
+    padding: 0 24rpx;
+    height: 88rpx;
+    transition: all 0.3s ease;
+  }
+  
+  .input-container:hover {
+    border-color: #b2bec3;
+  }
+  
+  .input {
+    flex: 1;
+    height: 100%;
+    font-size: 30rpx;
+    color: #2d3436;
+    background: transparent;
+  }
+  
+  .placeholder {
+    color: #b2bec3;
   }
   
   input:focus {
@@ -52,22 +81,10 @@
     outline: none;
   }
   
-  input::placeholder {
-    color: #adb5bd;
-  }
-  
-  /* 密码强度提示（如有） */
-  .password-strength {
-    margin-top: 16rpx;
-    font-size: 24rpx;
-    color: #636e72;
-  }
-  
-  /* 服务协议容器（如有） */
   .agreement-container {
     display: flex;
     align-items: center;
-    margin: 40rpx 0;
+    margin: 30rpx 0;
   }
   
   .agreement-checkbox {
@@ -76,48 +93,49 @@
   
   .agreement-text {
     font-size: 26rpx;
-    color: #636e72;
+    color: #7f8c8d;
   }
   
   .agreement-link {
-    color: #228be6;
-    text-decoration: none;
+    font-size: 26rpx;
+    color: #3498db;
+    margin-left: 8rpx;
   }
   
-  /* 注册按钮 */
   .btn-register {
     width: 100%;
-    height: 96rpx;
-    line-height: 96rpx;
-    background: linear-gradient(135deg, #4dabf7, #228be6);
+    height: 88rpx;
+    line-height: 88rpx;
+    background: linear-gradient(135deg, #4285f4, #3367d6);
     color: white;
     font-size: 32rpx;
     font-weight: 500;
     border-radius: 12rpx;
-    margin-top: 40rpx;
-    box-shadow: 0 4rpx 16rpx rgba(34, 139, 230, 0.3);
+    letter-spacing: 4rpx;
+    box-shadow: 0 6rpx 16rpx rgba(66, 133, 244, 0.3);
     transition: all 0.2s ease;
+    margin-top: 10rpx;
   }
   
-  .btn-register:active {
-    transform: scale(0.98);
-    box-shadow: 0 2rpx 8rpx rgba(34, 139, 230, 0.3);
+  .btn-register-hover {
+    opacity: 0.9;
+    transform: translateY(2rpx);
+    box-shadow: 0 3rpx 8rpx rgba(66, 133, 244, 0.3);
   }
   
-  /* 登录链接容器（如有） */
   .login-link-container {
-    margin-top: 40rpx;
     text-align: center;
-    font-size: 26rpx;
+    font-size: 28rpx;
     color: #636e72;
+    margin-top: 10rpx;
   }
   
   .btn-login-link {
-    color: #228be6;
-    margin-left: 16rpx;
+    color: #4285f4;
+    margin-left: 10rpx;
     font-weight: 500;
+    display: inline-block;
     position: relative;
-    transition: all 0.3s ease;
   }
   
   .btn-login-link::after {
@@ -127,15 +145,15 @@
     left: 0;
     width: 0;
     height: 2rpx;
-    background: #228be6;
+    background: #4285f4;
     transition: width 0.3s ease;
-  }
-  
-  .btn-login-link:active {
-    color: #1971c2;
   }
   
   .btn-login-link:hover::after {
     width: 100%;
+  }
+  
+  .btn-login-link:active {
+    color: #3367d6;
   }
   

@@ -1,4 +1,4 @@
-# 基大语言模型的RAG文档问答系统
+# 基于大语言模型的RAG文档问答系统
 ```
 QASystem/
 ├── documents/ # 存放原始上传文档
@@ -108,6 +108,7 @@ miniprogram/
 
 ## 使用
 
-1. 在Config.py中配置SECRET_KEY、JWT_SECRET_KEY、EMBEDDING_MODEL_PATH、DEEPSEEK_API_KEY
-2. 在终端运行python app.py
+1.  ```pip install -r requirements.txt```(安装依赖)
+1. 在config.py中配置SECRET_KEY、JWT_SECRET_KEY、**EMBEDDING_MODEL_PATH(必须配置)**、**DEEPSEEK_API_KEY（必须配置）**
+2. 在终端运行```python app.py```
 3. 默认后台管理系统的账号：admin，密码：admin123；小程序账号：users_test，密码：Temp@1234

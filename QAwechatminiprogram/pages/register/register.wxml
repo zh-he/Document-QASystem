@@ -1,15 +1,73 @@
 <view class="register-container">
-  <view class="form-item">
-    <text>用户名</text>
-    <input type="text" placeholder="输入用户名" bindinput="onInputUsername"/>
+  <view class="title-section">
+    <view class="title">用户注册</view>
   </view>
-  <view class="form-item">
-    <text>密码</text>
-    <input type="password" placeholder="输入密码" bindinput="onInputPassword"/>
+
+  <view class="form-card">
+
+    <view class="form-item">
+      <text class="label">用户名</text>
+      <view class="input-container">
+        <input 
+          class="input" 
+          type="text" 
+          placeholder="请输入用户名" 
+          placeholder-class="placeholder" 
+          bindinput="onInputUsername" />
+      </view>
+    </view>
+
+    <view class="form-item">
+      <text class="label">密码</text>
+      <view class="input-container">
+        <input 
+          class="input" 
+          type="password" 
+          placeholder="请输入密码" 
+          placeholder-class="placeholder" 
+          bindinput="onInputPassword" />
+      </view>
+    </view>
+
+    <view class="form-item">
+      <text class="label">确认密码</text>
+      <view class="input-container">
+        <input 
+          class="input" 
+          type="password" 
+          placeholder="请再次输入密码" 
+          placeholder-class="placeholder" 
+          bindinput="onInputConfirmPassword" />
+      </view>
+    </view>
+
+    <view class="agreement-container">
+      <checkbox 
+        class="agreement-checkbox" 
+        checked="{{isAgree}}" 
+        bindtap="toggleAgreement" 
+        color="#4285f4" />
+      <text class="agreement-text">我已阅读并同意</text>
+      <text 
+        class="agreement-link" 
+        bindtap="onViewAgreement">《用户协议》</text>
+    </view>
+
+    <button 
+      class="btn-register" 
+      hover-class="btn-register-hover" 
+      bindtap="onRegister">
+      注 册
+    </button>
+
+    <view class="login-link-container">
+      <text>已有账号？</text>
+      <text 
+        class="btn-login-link" 
+        bindtap="onLoginLink">
+        立即登录
+      </text>
+    </view>
+
   </view>
-  <view class="form-item">
-    <text>确认密码</text>
-    <input type="password" placeholder="确认密码" bindinput="onInputConfirmPassword"/>
-  </view>
-  <button class="btn-register" bindtap="onRegister">注册</button>
 </view>

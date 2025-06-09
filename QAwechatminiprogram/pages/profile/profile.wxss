@@ -1,50 +1,62 @@
 .profile-container {
-    padding: 40rpx;
     min-height: 100vh;
-    background: #f8f9fa;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0 0 40rpx 0;
+    box-sizing: border-box;
   }
   
-  .header {
-    text-align: center;
-    margin: 40rpx 0 60rpx;
-    position: relative;
+  .title-section {
+    width: 100%;
+    padding: 40rpx 0;
+    margin-top: 20rpx;
+    margin-bottom: 30rpx;
   }
   
-  .header .title {
-    font-size: 40rpx;
+  .title {
+    font-size: 36rpx;
     font-weight: 600;
-    color: #333;
+    color: #2c3e50;
+    text-align: center;
     letter-spacing: 2rpx;
-    position: relative;
-    display: inline-block;
+    line-height: 1.4;
   }
   
-  .header .title:after {
-    content: "";
-    position: absolute;
-    bottom: -12rpx;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60rpx;
-    height: 6rpx;
-    background: #1890ff;
-    border-radius: 3rpx;
+  .card-container {
+    width: 90%;
+    max-width: 650rpx;
+    display: flex;
+    flex-direction: column;
+    gap: 30rpx;
   }
   
-  .info-section, .doc-section {
-    background: #ffffff;
+  .form-card {
+    width: 100%;
+    background-color: #ffffff;
     border-radius: 20rpx;
-    padding: 40rpx;
-    box-shadow: 0 8rpx 30rpx rgba(0, 0, 0, 0.06);
-    margin-bottom: 40rpx;
-    overflow: hidden;
-    border: 1rpx solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 8rpx 30rpx rgba(0, 0, 0, 0.08);
+    padding: 40rpx 30rpx;
+    box-sizing: border-box;
+  }
+  
+  .section-header {
+    padding-bottom: 20rpx;
+    margin-bottom: 20rpx;
+    border-bottom: 2rpx solid #e9ecef;
+  }
+  
+  .section-title {
+    font-size: 32rpx;
+    font-weight: 600;
+    color: #2c3e50;
   }
   
   .info-item {
     display: flex;
-    align-items: center;
-    padding: 28rpx 0;
+    padding: 20rpx 0;
     border-bottom: 2rpx solid #f1f3f5;
   }
   
@@ -52,145 +64,88 @@
     border-bottom: none;
   }
   
-  .info-item .label {
+  .info-label {
     width: 160rpx;
     font-size: 28rpx;
-    color: #7f8c8d;
+    color: #34495e;
     font-weight: 500;
   }
   
-  .info-item .value {
+  .info-value {
     flex: 1;
-    font-size: 30rpx;
+    font-size: 28rpx;
     color: #2d3436;
     word-break: break-all;
-    font-weight: 500;
   }
   
-  .section-header {
-    padding-bottom: 24rpx;
-    margin-bottom: 30rpx;
-    border-bottom: 2rpx solid #e9ecef;
-    position: relative;
-  }
-  
-  .section-title {
-    font-size: 32rpx;
-    font-weight: 600;
-    color: #333;
-    position: relative;
-    padding-left: 24rpx;
-  }
-  
-  .section-title:before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 8rpx;
-    height: 28rpx;
-    background: #1890ff;
-    border-radius: 4rpx;
-  }
-  
-  .doc-subsection {
-    margin-bottom: 36rpx;
-  }
-  
-  .subsection-header {
-    padding-bottom: 20rpx;
-    border-bottom: 2rpx solid #f1f3f5;
-    margin-bottom: 20rpx;
-  }
-  
-  .subsection-title {
-    font-size: 30rpx;
-    font-weight: 600;
-    color: #555;
-    padding-left: 16rpx;
-    border-left: 6rpx solid #1890ff;
+  .doc-list {
+    padding-top: 10rpx;
   }
   
   .doc-item {
-    padding: 24rpx 16rpx;
+    padding: 20rpx 0;
     border-bottom: 1rpx dashed #e0e0e0;
-    background: #f9f9fc;
-    border-radius: 12rpx;
-    margin-bottom: 16rpx;
   }
   
   .doc-item:last-child {
-    margin-bottom: 0;
+    border-bottom: none;
   }
   
   .doc-name {
     font-size: 28rpx;
-    color: #444;
+    color: #2d3436;
     word-break: break-all;
   }
   
-  .no-docs .doc-name {
-    color: #aaa;
-    font-style: italic;
-    padding: 20rpx 0;
+  .empty-docs {
+    padding: 40rpx 0;
     text-align: center;
-    display: block;
+  }
+  
+  .empty-text {
+    color: #b2bec3;
+    font-size: 28rpx;
   }
   
   .action-card {
-    background: #ffffff;
-    border-radius: 20rpx;
-    padding: 36rpx 40rpx;
-    box-shadow: 0 8rpx 30rpx rgba(0, 0, 0, 0.06);
-    margin-bottom: 40rpx;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    position: relative;
-    overflow: hidden;
-    border: 1rpx solid rgba(0, 0, 0, 0.05);
+    padding: 30rpx;
     transition: all 0.2s ease;
   }
   
-  .action-card:active {
-    background-color: #f9f9fc;
-    transform: scale(0.99);
+  .action-card-hover {
+    background-color: #f8f9fa;
   }
   
   .action-text {
     font-size: 32rpx;
-    color: #333333;
-    font-weight: 600;
+    color: #2c3e50;
+    font-weight: 500;
   }
   
   .arrow {
     font-size: 40rpx;
-    color: #1890ff;
-    font-weight: 500;
-  }
-  
-  .button-section {
-    margin-top: 40rpx;
-    padding: 0 20rpx;
+    color: #b2bec3;
   }
   
   .btn-logout {
     width: 100%;
-    height: 96rpx;
-    line-height: 96rpx;
+    height: 88rpx;
+    line-height: 88rpx;
     background: linear-gradient(135deg, #ff6b6b, #f03e3e);
     color: white;
     font-size: 32rpx;
     font-weight: 500;
-    border-radius: 48rpx;
-    box-shadow: 0 8rpx 20rpx rgba(240, 62, 62, 0.25);
-    transition: all 0.3s ease;
-    border: none;
-    letter-spacing: 2rpx;
+    border-radius: 12rpx;
+    letter-spacing: 4rpx;
+    box-shadow: 0 6rpx 16rpx rgba(240, 62, 62, 0.3);
+    transition: all 0.2s ease;
   }
   
-  .btn-logout:active {
-    transform: scale(0.98);
-    box-shadow: 0 4rpx 10rpx rgba(240, 62, 62, 0.25);
+  .btn-logout-hover {
+    opacity: 0.9;
+    transform: translateY(2rpx);
+    box-shadow: 0 3rpx 8rpx rgba(240, 62, 62, 0.3);
   }

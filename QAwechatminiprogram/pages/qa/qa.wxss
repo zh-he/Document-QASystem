@@ -1,13 +1,13 @@
 /* 全局容器，使用 Flex 布局 */
 .qa-container {
     display: flex;
-    flex-direction: column;
-    height: 100vh;
-    background-color: #f8f9fa;
-    font-family: 'PingFang SC', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    position: relative;
+    flex-direction: column; /* 垂直排列：chat-window, input-area */
+    height: 100vh;         /* 占满整个视口高度 */
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    overflow: hidden;  /* 防止内部元素意外溢出 */
   }
-    
+  
   /* 菜单按钮 */
   .menu-btn {
     position: fixed;
@@ -19,45 +19,43 @@
     justify-content: center;
     align-items: center;
     background-color: #ffffff;
-    border-radius: 16rpx;
-    box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.08);
-    z-index: 100;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 12rpx;
+    box-shadow: 0 8rpx 30rpx rgba(0, 0, 0, 0.08);
+    z-index: 100; /* 确保在最上层 */
+    transition: all 0.2s ease;
   }
-    
+  
   .menu-btn:active {
     transform: scale(0.95);
-    box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
   }
-    
+  
   .menu-icon {
     width: 44rpx;
-    height: 5rpx;
-    background-color: #2d3436;
+    height: 6rpx;
+    background-color: #2c3e50;
     position: relative;
-    border-radius: 4rpx;
+    border-radius: 3rpx;
   }
-    
+  
   .menu-icon::before,
   .menu-icon::after {
     content: '';
     position: absolute;
     width: 44rpx;
-    height: 5rpx;
-    background-color: #2d3436;
+    height: 6rpx;
+    background-color: #2c3e50;
     left: 0;
-    border-radius: 4rpx;
-    transition: transform 0.3s ease;
+    border-radius: 3rpx;
   }
-    
+  
   .menu-icon::before {
-    top: -12rpx;
+    top: -14rpx;
   }
-    
+  
   .menu-icon::after {
-    top: 12rpx;
+    top: 14rpx;
   }
-    
+  
   /* 会话列表侧边栏 */
   .session-list {
     position: fixed;
@@ -67,156 +65,159 @@
     max-width: 640rpx;
     height: 100%;
     background-color: #ffffff;
-    box-shadow: 8rpx 0 48rpx rgba(0, 0, 0, 0.12);
+    box-shadow: 8rpx 0 48rpx rgba(0, 0, 0, 0.1);
     z-index: 1000;
-    transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    padding: 120rpx 40rpx 80rpx;
+    transition: left 0.3s ease;
+    padding: 80rpx 40rpx;
     box-sizing: border-box;
     overflow-y: auto;
-    border-top-right-radius: 16rpx;
-    border-bottom-right-radius: 16rpx;
+    border-top-right-radius: 12rpx;
+    border-bottom-right-radius: 12rpx;
   }
-    
+  
   .session-list.show {
     left: 0;
   }
-    
-  .session-header {
-    font-size: 40rpx;
-    font-weight: 600;
-    color: #2d3436;
-    margin-bottom: 50rpx;
+  
+  .title-section {
     padding-bottom: 20rpx;
+    margin-bottom: 40rpx;
     border-bottom: 2rpx solid #e9ecef;
   }
-    
+  
+  .title {
+    font-size: 36rpx;
+    font-weight: 600;
+    color: #2c3e50;
+    letter-spacing: 2rpx;
+  }
+  
   .sessions-container {
     margin-top: 40rpx;
-    padding-bottom: 40rpx;
   }
-    
+  
   .session-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 28rpx 24rpx;
-    border-radius: 16rpx;
-    margin-bottom: 16rpx;
+    border-radius: 10rpx;
+    margin-bottom: 10rpx;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
     position: relative;
     background-color: #f5f5f5;
-    transition: all 0.2s ease;
   }
-    
-  .session-item:active {
+  
+  .session-item:hover {
     background-color: #eaeaea;
-    transform: scale(0.99);
   }
-    
+  
   .session-item.active {
     background-color: #e0e0e0;
     font-weight: 500;
   }
-    
+  
   .session-title {
     font-size: 32rpx;
-    color: #2d3436;
+    color: #2c3e50;
     flex: 1;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-    
+  
   .session-actions {
     position: relative;
     display: flex;
     align-items: center;
   }
-    
+  
   .btn-more {
-    width: 52rpx;
-    height: 52rpx;
+    width: 48rpx;
+    height: 48rpx;
     display: flex;
     justify-content: center;
     align-items: center;
     background-color: #ced5db;
     border-radius: 50%;
     transition: background-color 0.2s ease;
-    z-index: 10; /* 确保按钮在菜单上方 */
   }
-    
-  .btn-more:active {
+  
+  .btn-more:hover {
     background-color: #84898d;
   }
-    
+  
   .more-icon {
     font-size: 36rpx;
     color: #ffffff;
     line-height: 1;
   }
-    
-  /* 操作菜单 - 极简定位 */
+  
   .actions-menu {
     position: absolute;
-    top: -90rpx; /* 固定位置在按钮上方 */
-    right: 60rpx; /* 固定位置在按钮右侧 */
+    top: 120%;
+    right: 0;
     background-color: #ffffff;
-    border-radius: 16rpx;
-    box-shadow: 0 8rpx 30rpx rgba(0, 0, 0, 0.25);
-    z-index: 9999;
-    min-width: 180rpx;
-    display: none; /* 默认不显示 */
+    border-radius: 12rpx;
+    box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.1);
+    z-index: 101;
+    overflow: hidden;
+    min-width: 160rpx;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20rpx);
+    /* transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease; */
   }
   
   .actions-menu.show {
-    display: block; /* 显示时直接切换显示方式，没有过渡动画 */
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
   }
   
-  /* 菜单项样式 */
   .action-item {
-    padding: 30rpx 28rpx;
-    font-size: 30rpx;
-    color: #2d3436;
+    padding: 20rpx 24rpx;
+    font-size: 28rpx;
+    color: #2c3e50;
+    cursor: pointer;
     transition: background-color 0.2s ease;
     white-space: nowrap;
   }
   
-  .action-item:active {
+  .action-item:hover {
     background-color: #f1f3f5;
   }
   
   .rename-action {
-    border-bottom: 1rpx solid #e9ecef;
+    border-bottom: 2rpx solid #e9ecef;
   }
   
-  .delete-action {
-    color: #e74c3c;
-  }
-    
   .new-session {
-    padding: 0 20rpx;
+    padding: 0 40rpx;
     margin-top: 40rpx;
-    margin-bottom: 20rpx;
-    height: 90rpx;
+    height: 90rpx; /* 固定新建会话按钮区域高度 */
   }
-    
+  
   .btn-create {
     width: 100%;
     padding: 28rpx 0;
-    background: linear-gradient(135deg, #4dabf7, #228be6);
+    background: linear-gradient(135deg, #4285f4, #3367d6);
     color: #ffffff;
-    font-size: 34rpx;
+    font-size: 32rpx;
     font-weight: 500;
-    border-radius: 16rpx;
+    border-radius: 12rpx;
     text-align: center;
-    box-shadow: 0 10rpx 24rpx rgba(34, 139, 230, 0.25);
+    box-shadow: 0 6rpx 16rpx rgba(66, 133, 244, 0.3);
     transition: all 0.2s ease;
   }
-    
-  .btn-create:active {
-    transform: scale(0.98);
-    box-shadow: 0 4rpx 16rpx rgba(34, 139, 230, 0.2);
+  
+  .btn-create-hover {
+    opacity: 0.9;
+    transform: translateY(2rpx);
+    box-shadow: 0 3rpx 8rpx rgba(66, 133, 244, 0.3);
   }
-    
+  
   /* 遮罩层 */
   .mask {
     position: fixed;
@@ -224,146 +225,132 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.35);
+    background-color: rgba(0, 0, 0, 0.3);
     z-index: 999;
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s ease, visibility 0.3s ease;
-    backdrop-filter: blur(3px); /* 添加毛玻璃效果 */
   }
-    
+  
   .mask.show {
     opacity: 1;
     visibility: visible;
   }
-    
-  /* 聊天区域 - 修改为常规容器 */
+  
+  /* 聊天区域 - Flex 子项，占据剩余空间 */
   .chat-window {
-    flex: 1;
-    background-color: #f8f9fa;
-    padding-top: 100rpx; /* 为顶部菜单按钮预留空间 */
-    padding-bottom: 100rpx; /* 为底部输入框预留更多空间，确保最后一条消息可见 */
-    box-sizing: border-box;
-  }
-    
-  /* 消息列表容器 - 不再使用scroll-view */
-  .messages-container {
-    padding: 0 40rpx;
-    background-color: #f8f9fa;
-    min-height: calc(100vh - 240rpx);
+    flex: 1;                 /* 关键：占据父容器剩余空间 */
+    overflow: hidden;        /* 关键：防止内部 scroll-view 溢出影响布局 */
+    display: flex;           /* 使其成为 flex 容器 */
+    flex-direction: column;  /* 内部元素垂直排列 */
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef); /* 背景色与全局统一 */
   }
   
-  /* 锚点，用于滚动定位和底部间距 */
-  .message-anchor {
-    height: 150rpx; /* 增加底部空间，防止最后一条消息被输入框遮挡 */
-    margin-top: 40rpx;
+  /* 消息列表容器 (scroll-view) - 占据 chat-window 的全部空间 */
+  .messages-container {
+    flex: 1;                 /* 关键：占据 chat-window 的剩余空间 */
+    width: 100%;             /* 宽度占满 */
+    overflow-y: auto;        /* 由 scroll-y="true" 处理 */
+    box-sizing: border-box;  /* padding 包含在宽高内 */
+    padding: 40rpx;          /* 内边距，给消息和底部留出空间 */
+    padding-bottom: 20rpx;   /* 底部可以小一点，避免和 loading/输入框太近 */
+    -webkit-overflow-scrolling: touch; /* iOS 优化，使滚动更流畅 */
   }
-    
+  
   /* 空状态提示 */
   .empty-state {
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    color: #adb5bd;
+    color: #b2bec3;
     font-size: 32rpx;
     margin-top: 100rpx;
-    height: 300rpx;
+    width: 100%;
+    flex: 1; /* 让空状态也占满空间 */
   }
-    
+  
   /* 消息外层容器 */
   .msg-wrapper {
     width: 100%;
     display: flex;
-    margin-bottom: 40rpx;
-    opacity: 0;
-    animation: fadeIn 0.3s forwards;
+    margin-bottom: 40rpx; /* 增加消息间距 */
   }
-    
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10rpx); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-    
+  
   .msg-wrapper.user {
     justify-content: flex-end;
   }
-    
-  .msg-wrapper.bot,
-  .msg-wrapper.assistant {
+  
+  .msg-wrapper.bot, .msg-wrapper.assistant { /* 兼容 assistant role */
     justify-content: flex-start;
   }
-    
-  /* 消息气泡 */
+  
+  /* 内层消息气泡 */
   .msg-item {
     max-width: 85%;
-    padding: 24rpx 32rpx;
+    padding: 24rpx 32rpx; /* 增加内边距 */
     border-radius: 24rpx;
     word-break: break-word;
     box-sizing: border-box;
     box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
   }
-    
+  
   .msg-item.user {
-    background: linear-gradient(135deg, #a5e3ff, #e1f5fe);
+    background: linear-gradient(135deg, #4dabf7, #228be6); /* 统一蓝色渐变风格 */
     border-top-right-radius: 8rpx;
-    color: #0277bd;
+    color: #ffffff;
   }
-    
+  
   .msg-item.assistant {
-    background-color: #ffffff;
+    background-color: #ffffff; /* 白色气泡 */
     border-top-left-radius: 8rpx;
-    color: #343a40;
-    box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
+    color: #2c3e50;
   }
-    
+  
   /* 气泡文字 */
   .msg-content {
-    font-size: 26rpx;
+    font-size: 30rpx;
     line-height: 1.6;
   }
-    
+  
   /* Loading 动画 */
   .loading {
     display: flex;
-    justify-content: flex-start;
+    justify-content: flex-start; /* Loading 靠左 */
     align-items: center;
-    padding: 20rpx 40rpx;
-    padding-left: 72rpx;
-    margin-top: 20rpx;
-    margin-bottom: 40rpx;
+    padding: 20rpx 40rpx; /* 调整 loading 的内边距 */
+    padding-left: 72rpx; /* 与 assistant 消息对齐 */
   }
-    
+  
   .dot-typing {
     width: 16rpx;
     height: 16rpx;
-    background-color: #adb5bd;
+    background-color: #b2bec3;
     border-radius: 50%;
     animation: dot-typing 1.5s infinite linear;
     position: relative;
   }
-    
+  
   .dot-typing::before,
   .dot-typing::after {
     content: '';
     position: absolute;
     width: 16rpx;
     height: 16rpx;
-    background-color: #adb5bd;
+    background-color: #b2bec3;
     border-radius: 50%;
     animation: dot-typing 1.5s infinite linear;
   }
-    
+  
   .dot-typing::before {
     left: -24rpx;
     animation-delay: 0s;
   }
-    
+  
   .dot-typing::after {
     left: 24rpx;
     animation-delay: 0.75s;
   }
-    
+  
   @keyframes dot-typing {
     0%, 100% {
       opacity: 0.3;
@@ -374,169 +361,89 @@
       transform: scale(1);
     }
   }
-    
-  /* 输入区域 */
+  
+  /* 输入区域 - Flex 子项，固定高度 */
   .input-area {
-    position: fixed;
-    left: 0;
-    bottom: 0;
     width: 100%;
-    padding: 20rpx 25rpx;
-    padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+    padding: 20rpx 30rpx; /* 调整内边距 */
+    padding-bottom: calc(20rpx + env(safe-area-inset-bottom)); /* 适配 iPhone X 等底部安全区域 */
     background-color: #ffffff;
     border-top: 1rpx solid #e9ecef;
     box-sizing: border-box;
-    z-index: 95;
-    box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.05);
+    box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.03);
   }
-    
-  .input-wrapper {
+  
+  .input-bar {
     display: flex;
-    align-items: flex-end;
-    width: 100%;
+    align-items: flex-end; /* 对齐底部，特别是 textarea auto-height 时 */
+    padding: 15rpx 20rpx; /* 调整内边距 */
     background-color: #f8f9fa;
-    border: 1rpx solid #e9ecef;
-    border-radius: 40rpx;
+    border: 2rpx solid #dfe6e9;
+    border-radius: 40rpx; /* 更圆润 */
     box-sizing: border-box;
-    padding: 12rpx 15rpx;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
   }
-    
-  /* 文本输入框 */
+  
+  .input-bar:hover {
+    border-color: #b2bec3;
+  }
+  
   .msg-input {
-    flex: 1;
-    min-height: 68rpx; /* 初始高度 */
-    max-height: 180rpx; /* 最大高度 */
-    height: auto; /* 允许自动增长 */
+    flex: 1; /* 占据剩余宽度 */
+    min-height: 40rpx; /* 最小高度 */
+    max-height: 200rpx; /* 最大高度，超过会滚动 */
     line-height: 1.5;
-    padding: 15rpx 20rpx;
-    border: none;
-    background-color: transparent;
-    font-size: 26rpx;
-    color: #333;
-    overflow-y: auto; /* 达到最大高度后可滚动 */
-    word-break: break-word;
-    transition: height 0.2s ease; /* 平滑过渡效果 */
+    padding: 10rpx 0; /* 垂直内边距，左右由 input-bar 控制 */
+    border: none; /* 移除边框，由 input-bar 提供 */
+    background-color: transparent; /* 透明背景 */
+    outline: none;
+    font-size: 30rpx;
+    color: #2d3436;
+    box-sizing: border-box;
   }
-    
-  /* 操作区域 */
-  .action-area {
-    display: flex;
-    align-items: center;
-    margin-left: 10rpx;
-    padding-bottom: 10rpx; /* 添加底部间距使其与输入框对齐 */
+  
+  .placeholder {
+    color: #b2bec3;
   }
-    
-  /* 模式按钮 */
-  .mode-btn {
-    padding: 10rpx 18rpx;
-    margin-right: 12rpx;
-    background-color: #f0f2f5;
-    border-radius: 20rpx;
-    transition: background-color 0.2s;
-  }
-    
-  .mode-btn:active {
-    background-color: #e4e7eb;
-  }
-    
-  .mode-text {
-    font-size: 26rpx;
-    color: #228be6;
-    font-weight: 500;
-  }
-    
-  /* 发送按钮 - 蓝色圆形风格 */
+  
   .btn-send {
-    width: 68rpx;
-    height: 68rpx;
+    width: 70rpx;
+    height: 70rpx;
+    margin-left: 20rpx;
     border-radius: 50%;
-    background: linear-gradient(135deg, #4dabf7, #228be6);
+    background: linear-gradient(135deg, #4285f4, #3367d6);
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 4rpx 12rpx rgba(34, 139, 230, 0.3);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: all 0.2s ease;
+    flex-shrink: 0; /* 防止发送按钮被压缩 */
+    box-shadow: 0 4rpx 12rpx rgba(66, 133, 244, 0.3);
   }
-    
-  .btn-send:active {
-    transform: scale(0.92);
-    box-shadow: 0 2rpx 8rpx rgba(34, 139, 230, 0.2);
+  
+  .btn-send-hover {
+    opacity: 0.9;
+    transform: scale(0.95);
+    box-shadow: 0 2rpx 8rpx rgba(66, 133, 244, 0.3);
   }
-    
+  
   .send-icon {
     width: 0;
     height: 0;
     border-left: 12rpx solid transparent;
     border-right: 12rpx solid transparent;
-    border-bottom: 20rpx solid #ffffff;
-    transform: rotate(90deg) translateX(2rpx);
-  }
-    
-  /* 模式选项下拉菜单 */
-  .mode-options {
-    position: absolute;
-    bottom: 110%;
-    right: 25rpx;
-    width: 240rpx;
-    background-color: #ffffff;
-    border-radius: 16rpx;
-    box-shadow: 0 12rpx 32rpx rgba(0, 0, 0, 0.15);
-    z-index: 100;
-    overflow: hidden;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(10rpx);
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-    
-  .mode-options.show {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-  }
-    
-  .mode-option {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 24rpx;
-    font-size: 30rpx;
-    color: #495057;
-    transition: background-color 0.2s ease;
-  }
-    
-  .mode-option:active {
-    background-color: #f1f3f5;
-  }
-    
-  .mode-option.active {
-    background-color: #e7f5ff;
-    color: #228be6;
-    font-weight: 500;
-  }
-    
-  .check-icon {
-    width: 18rpx;
-    height: 18rpx;
-    border-radius: 50%;
-    background-color: #228be6;
-  }
-  
-  /* 删除返回底部按钮样式 */
-  
-  /* 空会话提示 */
-  .empty-sessions {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 200rpx;
-    color: #adb5bd;
-    font-size: 30rpx;
+    border-bottom: 18rpx solid #ffffff;
+    transform: rotate(90deg) translateX(2rpx); /* 微调使箭头居中 */
   }
 
-  .btn-send.disabled {
-    opacity: 0.5;
-    background: #a0a0a0;
+  .input-bar-disabled {
+    border-color: #d1d1d1;
+    background-color: #f0f0f0;
+    opacity: 0.7;
+  }
+  
+  .btn-send-disabled {
+    background: linear-gradient(135deg, #b1b1b1, #949494);
+    opacity: 0.7;
+    box-shadow: 0 4rpx 12rpx rgba(150, 150, 150, 0.3);
     cursor: not-allowed;
   }
