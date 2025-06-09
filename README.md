@@ -1,13 +1,13 @@
 # 基于大语言模型的RAG文档问答系统
 ```
 QASystem/
-├── documents/ # 存放原始上传文档
-├── migrations/ # 数据库迁移目录（Flask-Migrate生成）
+├── documents/ # 存放上传文档
+├── migrations/ # 数据库迁移目录
 ├── static/ # 静态文件目录
 │ ├── css/
-│ │ └── style.css # 登录页等的CSS样式
+│ 	├── style.css # 登录页等的CSS样式
 │ └── images/
-│ └── login_bg.png # 登录页背景图
+│ 	└── login_bg.png # 登录页背景图
 ├── templates/ # Flask模板目录（HTML页面）
 │ ├── admin_index.html
 │ ├── base.html
@@ -15,16 +15,16 @@ QASystem/
 │ ├── manage_docs.html
 │ ├── manage_roles.html
 │ └── manage_users.html
-├── vectorstore/ # 后端核心逻辑模块
-│ ├── app.py # Flask主应用入口
-│ ├── config.py # 配置文件（如密钥、路径等）
-│ ├── model.py # 向量模型加载与管理
-│ ├── RAG_QA.py # RAG问答逻辑实现
-│ ├── text_process.py # 文本抽取与清洗
-│ └── vector_manager.py # 向量库管理工具
-├── database.db # SQLite数据库文件
+├── vectorstore/ # 向量库
+├── app.py # Flask主应用入口
+├── config.py # 配置文件（如密钥、路径等）
+├── model.py # 向量模型加载与管理
+├── RAG_QA.py # RAG问答逻辑实现
+├── text_process.py # 文本抽取与清洗
+├── vector_manager.py # 向量库管理工具
+└── database.db # SQLite数据库文件
 
-miniprogram/
+QAwechatminiprogram/
 ├── icons/                         # 图标资源
 │   └── …  
 ├── pages/                         # 页面文件夹
@@ -43,7 +43,7 @@ miniprogram/
 │   │   ├── modify_password.wxss
 │   │   ├── modify_password.js
 │   │   └── modify_password.json
-│   ├── profile/                   # “我的”页（个人信息）
+│   ├── profile/                   # “我的”页
 │   │   ├── profile.wxml
 │   │   ├── profile.wxss
 │   │   ├── profile.js
@@ -60,9 +60,9 @@ miniprogram/
 │       └── register.json
 ├── utils/                         # 工具函数
 │   └── request.js                 # 封装的网络请求
-├── app.js                         # 小程序入口脚本
-├── app.json                       # 全局配置
-├── project.config.json            # IDE 配置
+├── app.js                         
+├── app.json                      
+├── project.config.json           
 └── project.private.config.json   
 ```
 
@@ -86,7 +86,7 @@ miniprogram/
 
 ![image-20250521162805386](README.assets/后台管理系统角色管理页面.png)
 
-2. 小程序展示
+2. 基于大语言模型的RAG文档问答助手
 
 <div style="
   display: flex;
