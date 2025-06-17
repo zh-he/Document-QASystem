@@ -1,0 +1,86 @@
+
+<view class="qa-container" bindtap="handlePageTap">
+  <!-- 菜单按钮 -->
+  <view class="menu-btn" bindtap="toggleSessionList">
+    <view class="menu-icon"></view>
+  </view>
+  
+  <!-- 会话列表侧边栏 -->
+  <view class="session-list {{showSessionList ? 'show' : ''}}">
+    <view class="title-section">
+      <view class="title">会话列表</view>
+    </view>
+    
+    <view class="sessions-container">
+      <block wx:for="{{sessions}}" wx:key="id">
+        <view class="session-item {{currentSessionId === item.id ? 'active' : ''}}" data-id="{{item.id}}" bindtap="selectSession">
+          <text class="session-title">{{item.title}}</text>
+          <view class="session-actions">
+            <view class="btn-more" catchtap="showActionsMenu" data-id="{{item.id}}">
+              <text class="more-icon">⋮</text>
+            </view>
+            <view class="actions-menu {{item.showMenu ? 'show' : ''}}">
+              <view class="action-item rename-action" catchtap="renameSession" data-id="{{item.id}}">重命名</view>
+              <view class="action-item delete-action" catchtap="deleteSession" data-id="{{item.id}}">删除</view>
+            </view>
+          </view>
+        </view>
+      </block>
+    </view>
+    
+    <view class="new-session">
+      <view class="btn-create" hover-class="btn-create-hover" bindtap="createNewSession">新建会话</view>
+    </view>
+  </view>
+  
+  <!-- 遮罩层 -->
+  <view class="mask {{showSessionList ? 'show' : ''}}" bindtap="toggleSessionList"></view>
+  
+  <!-- 聊天窗口 -->
+  <view class="chat-window">
+    <scroll-view
+      class="messages-container"
+      scroll-y="true"
+      scroll-top="{{scrollTop}}"
+      scroll-with-animation="true">
+      <block wx:if="{{messages.length > 0}}">
+        <block wx:for="{{messages}}" wx:key="index" wx:for-item="item" wx:for-index="index">
+          <view id="msg-{{index}}" class="msg-wrapper {{item.role}}">
+            <view class="msg-item {{item.role}}">
+              <view class="msg-content">{{item.content}}</view>
+            </view>
+          </view>
+        </block>
+        <view class="loading" wx:if="{{isLoading}}">
+          <view class="dot-typing"></view>
+        </view>
+      </block>
+      <view class="empty-state" wx:else>
+        <text>开始一段新的对话吧</text>
+      </view>
+    </scroll-view>
+  </view>
+  
+  <!-- 输入区域 -->
+  <view class="input-area">
+  <view class="input-bar {{isLoading ? 'input-bar-disabled' : ''}}">
+    <textarea 
+      class="msg-input" 
+      placeholder="{{isLoading ? '等待回复中...' : '输入您的问题...'}}" 
+      placeholder-class="placeholder" 
+      value="{{inputValue}}" 
+      bindinput="onInputChange" 
+      maxlength="-1" 
+      show-confirm-bar="{{false}}" 
+      auto-height 
+      adjust-position="{{false}}"
+      disabled="{{isLoading}}">  </textarea>
+    <view 
+      class="btn-send {{isLoading ? 'btn-send-disabled' : ''}}" 
+      hover-class="{{isLoading ? '' : 'btn-send-hover'}}"  
+      bindtap="{{isLoading ? '' : 'sendMessage'}}">
+      <view class="send-icon"></view>
+    </view>
+  </view>
+</view>  
+</view>

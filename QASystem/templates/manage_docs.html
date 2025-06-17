@@ -1,0 +1,572 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <!-- 页面标题与概述 -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-file-alt me-2"></i>文档管理
+        </h1>
+        {% if current_user.role and current_user.role.name == 'super_admin' %}
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
+            <i class="fas fa-cloud-upload-alt me-2"></i>上传新文档
+        </button>
+        {% else %}
+        <button class="btn btn-secondary" disabled data-bs-toggle="tooltip" title="仅超级管理员可上传文档">
+            <i class="fas fa-cloud-upload-alt me-2"></i>上传新文档
+        </button>
+        {% endif %}
+    </div>
+
+    <!-- 统计卡片 -->
+    <div class="row mb-4">
+        <!-- 总文档数 -->
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">总文档数</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_docs }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-folder-open fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- PDF文件数 -->
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">PDF 文档数</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ pdf_docs }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-file-pdf fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 其他文件数 -->
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">其他文档数</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ other_docs }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-file-alt fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 文档列表 -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 bg-dark d-flex align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-white"><i class="fas fa-list me-2"></i>文档列表</h6>
+            <div class="dropdown no-arrow">
+                <a class="dropdown-toggle text-white" href="#" role="button" id="docActionsDropdown"
+                   data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v fa-sm fa-fw"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="docActionsDropdown">
+                    {% if current_user.role and current_user.role.name == 'super_admin' %}
+                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                        <i class="fas fa-cloud-upload-alt fa-sm fa-fw me-2 text-gray-400"></i>上传新文档
+                    </a>
+                    {% else %}
+                    <a class="dropdown-item disabled" href="#" data-bs-toggle="tooltip" title="仅超级管理员可上传文档">
+                        <i class="fas fa-cloud-upload-alt fa-sm fa-fw me-2 text-gray-400"></i>上传新文档
+                    </a>
+                    {% endif %}
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="{{ url_for('manage_docs') }}">
+                        <i class="fas fa-sync fa-sm fa-fw me-2 text-gray-400"></i>刷新列表
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            {% if pagination.items %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                    <tr>
+                        <th>文件名</th>
+                        <th width="180">上传时间</th>
+                        <th width="120" class="text-center">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for doc in pagination.items %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="file-icon bg-light rounded p-2 me-2">
+                                    {% set ext = doc.filename|lower %}
+                                    {% if ext.endswith('.pdf') %}
+                                    <i class="fas fa-file-pdf text-danger"></i>
+                                    {% elif ext.endswith('.txt') %}
+                                    <i class="fas fa-file-alt text-primary"></i>
+                                    {% elif ext.endswith('.doc') or ext.endswith('.docx') %}
+                                    <i class="fas fa-file-word text-info"></i>
+                                    {% else %}
+                                    <i class="fas fa-file text-secondary"></i>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <div class="file-name">{{ doc.filename }}</div>
+                                    <small class="text-muted">{{ doc.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span data-bs-toggle="tooltip" data-bs-placement="top"
+                                  title="{{ doc.created_at.strftime('%Y-%m-%d %H:%M:%S') }}">
+                                {{ doc.created_at.strftime('%Y-%m-%d') }}
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <div class="btn-group btn-group-sm">
+                                <form action="{{ url_for('delete_doc_page') }}" method="POST" class="d-inline">
+                                    <input type="hidden" name="filename" value="{{ doc.filename }}">
+                                    {% if current_user.role and current_user.role.name == 'super_admin' %}
+                                    <button type="button" class="btn btn-outline-danger"
+                                            onclick="confirmDelete(this.form, '{{ doc.filename }}')"
+                                            data-bs-toggle="tooltip" title="删除文档">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                    {% else %}
+                                    <button type="button" class="btn btn-outline-danger" disabled
+                                            data-bs-toggle="tooltip" title="仅超级管理员可删除文档">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                    {% endif %}
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 分页 - 更新为与用户管理页面一致的样式 -->
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <div class="text-muted small">
+                    显示 {{ pagination.items|length }} 条，共 {{ pagination.total }} 条记录
+                </div>
+                <nav aria-label="Page navigation">
+                    <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+                            <a class="page-link" href="{{ url_for('manage_docs', page=1) }}" aria-label="First">
+                                <span aria-hidden="true"><i class="fas fa-angle-double-left"></i></span>
+                            </a>
+                        </li>
+                        <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+                            <a class="page-link" href="{{ url_for('manage_docs', page=pagination.prev_num) }}"
+                               aria-label="Previous">
+                                <span aria-hidden="true"><i class="fas fa-angle-left"></i></span>
+                            </a>
+                        </li>
+
+                        {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2,
+                        right_current=2) %}
+                        {% if page_num %}
+                        <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
+                            <a class="page-link" href="{{ url_for('manage_docs', page=page_num) }}">{{ page_num }}</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">…</span>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+
+                        <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+                            <a class="page-link" href="{{ url_for('manage_docs', page=pagination.next_num) }}"
+                               aria-label="Next">
+                                <span aria-hidden="true"><i class="fas fa-angle-right"></i></span>
+                            </a>
+                        </li>
+                        <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+                            <a class="page-link" href="{{ url_for('manage_docs', page=pagination.pages) }}"
+                               aria-label="Last">
+                                <span aria-hidden="true"><i class="fas fa-angle-double-right"></i></span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <div class="empty-state">
+                    <i class="fas fa-file-alt fa-4x text-muted mb-3"></i>
+                    <h5>暂无文档</h5>
+                    <p class="text-muted">点击"上传新文档"按钮添加文档</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- 上传文档模态框 -->
+<div class="modal fade" id="uploadModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title"><i class="fas fa-cloud-upload-alt me-2"></i>上传新文档</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="upload-form" action="{{ url_for('upload_doc_page') }}" method="POST"
+                      enctype="multipart/form-data">
+                    <input type="hidden" name="custom_regex" value="{{ custom_regex }}">
+                    <div class="file-upload-container mb-4">
+                        <div id="dropzone" class="file-upload-area p-5 bg-light border-dashed rounded text-center">
+                            <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-3"></i>
+                            <h5 class="text-dark">拖拽或点击选择文件</h5>
+                            <label for="file-input" class="btn btn-primary mt-3">
+                                <i class="fas fa-folder-open me-2"></i>浏览文件
+                            </label>
+                            <input type="file" id="file-input" name="file" class="d-none" multiple required>
+                        </div>
+                        <div id="file-list" class="mt-3"></div>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">取消</button>
+                        <button type="submit" class="btn btn-primary" id="submit-upload">
+                            <i class="fas fa-upload me-2"></i>上传文件
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 删除确认模态框 -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title"><i class="fas fa-trash-alt me-2"></i>删除文档</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <i class="fas fa-exclamation-circle fa-3x text-warning mb-3"></i>
+                <h5>您确定要删除此文档吗？</h5>
+                <p class="text-muted">此操作不可撤销</p>
+                <div class="fw-bold mt-3" id="delete-file-name"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button class="btn btn-danger" id="confirm-delete-btn">确认删除</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 通用样式 -->
+<style>
+    .chart-area {
+        position: relative;
+        height: 400px;
+        overflow: hidden;
+    }
+
+    .card {
+        transition: all 0.3s ease;
+        border-radius: 0.5rem;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .border-left-primary {
+        border-left: 4px solid #4e73df !important;
+    }
+
+    .border-left-success {
+        border-left: 4px solid #1cc88a !important;
+    }
+
+    .border-left-info {
+        border-left: 4px solid #36b9cc !important;
+    }
+
+    .file-icon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .file-upload-area {
+        border-style: dashed;
+        border-color: #dee2e6;
+        transition: all 0.3s ease;
+    }
+
+    .file-upload-area:hover {
+        border-color: #4e73df;
+        background-color: rgba(78, 115, 223, 0.05);
+    }
+
+    .file-upload-area.drag-over {
+        border-color: #4e73df;
+        background-color: rgba(78, 115, 223, 0.1);
+    }
+
+    .file-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem;
+        border: 1px solid #e3e6f0;
+        border-radius: 0.35rem;
+        margin-bottom: 0.5rem;
+        background: #fff;
+        transition: all 0.2s;
+    }
+
+    .file-item:hover {
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+
+    .file-item-invalid {
+        border-color: #e74a3b;
+        background-color: rgba(231, 74, 59, 0.05);
+    }
+
+    .file-item .remove-file {
+        cursor: pointer;
+        color: #e74a3b;
+        transition: all 0.2s;
+    }
+
+    .file-item .remove-file:hover {
+        color: #c52914;
+    }
+
+    .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
+
+    .table-hover tbody tr {
+        transition: background-color 0.15s ease;
+    }
+
+    .table tr:focus, .table td:focus, .table tr:focus-within {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+
+    .table td, .table th {
+        padding: 0.6rem 0.75rem !important;
+        line-height: 1.2 !important;
+        vertical-align: middle !important;
+    }
+
+    .toast {
+        opacity: 1 !important;
+    }
+
+    .modal-content {
+        border: none;
+        border-radius: 0.5rem;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+
+    .modal-header {
+        border-bottom: 1px solid #f1f1f1;
+        padding: 1rem 1.5rem;
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+    }
+
+    .modal-footer {
+        border-top: 1px solid #f1f1f1;
+        padding: 1rem 1.5rem;
+    }
+
+    .border-dashed {
+        border-style: dashed !important;
+    }
+
+    .text-white {
+        color: #fff !important;
+    }
+
+    .bg-dark {
+        background-color: #343a40 !important;
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Toast 通知
+        function showToast(title, message, type = 'info') {
+            const toastEl = document.getElementById('liveToast');
+            const header = document.getElementById('toastHeader');
+            document.getElementById('toast-title').textContent = title;
+            document.getElementById('toast-message').textContent = message;
+            header.className = 'toast-header';
+            if (type === 'success') header.classList.add('bg-success', 'text-white');
+            else if (type === 'danger') header.classList.add('bg-danger', 'text-white');
+            else if (type === 'warning') header.classList.add('bg-warning', 'text-dark');
+            else header.classList.add('bg-primary', 'text-white');
+            new bootstrap.Toast(toastEl, {delay: 5000}).show();
+        }
+
+        // 删除确认
+        window.confirmDelete = function (form, name) {
+            document.getElementById('delete-file-name').textContent = name;
+            const modalEl = document.getElementById('deleteModal');
+            const modal = new bootstrap.Modal(modalEl);
+            modal.show();
+            const btnOld = document.getElementById('confirm-delete-btn');
+            const btnNew = btnOld.cloneNode(true);
+            btnOld.parentNode.replaceChild(btnNew, btnOld);
+            btnNew.addEventListener('click', function () {
+                form.submit();
+                modal.hide();
+            });
+        };
+
+        // 拖放上传
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('file-input');
+        const fileListBox = document.getElementById('file-list');
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
+            dropzone.addEventListener(evt, e => {
+                e.preventDefault();
+                e.stopPropagation();
+            }, false);
+        });
+        ['dragenter', 'dragover'].forEach(evt => {
+            dropzone.addEventListener(evt, () => dropzone.classList.add('drag-over'), false);
+        });
+        ['dragleave', 'drop'].forEach(evt => {
+            dropzone.addEventListener(evt, () => dropzone.classList.remove('drag-over'), false);
+        });
+        dropzone.addEventListener('drop', e => {
+            fileInput.files = e.dataTransfer.files;
+            updateFileDisplay();
+        });
+        dropzone.addEventListener('click', e => {
+            if (!e.target.closest('label[for="file-input"]')) fileInput.click();
+        });
+
+        // 列表更新
+        fileInput.addEventListener('change', updateFileDisplay);
+
+        function updateFileDisplay() {
+            fileListBox.innerHTML = '';
+            const files = fileInput.files;
+            if (!files) return;
+            let invalid = false;
+            [...files].forEach((f, i) => {
+                const name = f.name, low = name.toLowerCase();
+                const pdf = low.endsWith('.pdf'), txt = low.endsWith('.txt'),
+                    word = low.endsWith('.doc') || low.endsWith('.docx'),
+                    valid = pdf || txt || word;
+                if (!valid) invalid = true;
+                let icon = '<i class="fas fa-file text-secondary"></i>', desc = '未知类型';
+                if (pdf) {
+                    icon = '<i class="fas fa-file-pdf text-danger"></i>';
+                    desc = 'PDF 文档';
+                } else if (txt) {
+                    icon = '<i class="fas fa-file-alt text-primary"></i>';
+                    desc = '文本文档';
+                } else if (word) {
+                    icon = '<i class="fas fa-file-word text-info"></i>';
+                    desc = 'Word 文档';
+                }
+                fileListBox.insertAdjacentHTML('beforeend', `
+        <div class="file-item ${valid ? '' : 'file-item-invalid'}">
+          <div class="d-flex align-items-center">
+            <div class="file-icon bg-light rounded p-2 me-2">${icon}</div>
+            <div>
+              <div class="${valid ? '' : 'text-danger'}">${f.name}</div>
+              <small class="text-muted">${desc} (${(f.size / 1024).toFixed(2)} KB)</small>
+              ${!valid ? '<small class="text-danger d-block">不支持的文件类型</small>' : ''}
+            </div>
+          </div>
+          <button type="button" class="btn btn-link p-0 remove-file" data-index="${i}" title="移除文件">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>`);
+            });
+            fileListBox.querySelectorAll('.remove-file').forEach(btn => {
+                btn.addEventListener('click', () => removeFile(+btn.dataset.index));
+            });
+            const submitBtn = document.getElementById('submit-upload');
+            if (submitBtn) {
+                submitBtn.disabled = invalid;
+                submitBtn.title = invalid ? '请移除不支持的文件类型' : '';
+            }
+        }
+
+        window.removeFile = function (idx) {
+            const dt = new DataTransfer();
+            [...fileInput.files].forEach((f, i) => {
+                if (i !== idx) dt.items.add(f);
+            });
+            fileInput.files = dt.files;
+            updateFileDisplay();
+        };
+
+        // 表单提交校验
+        document.getElementById('upload-form').addEventListener('submit', e => {
+            const files = fileInput.files;
+            if (!files || files.length === 0) {
+                e.preventDefault();
+                showToast('错误', '请选择要上传的文件', 'danger');
+                return;
+            }
+            let bad = false;
+            [...files].forEach(f => {
+                const low = f.name.toLowerCase();
+                if (!(/\.(pdf|txt|docx?)$/.test(low))) bad = true;
+            });
+            if (bad) {
+                e.preventDefault();
+                showToast('错误', '包含不支持的文件类型', 'danger');
+            } else {
+                const btn = document.getElementById('submit-upload');
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>上传中...';
+            }
+        });
+
+        // 初始化 tooltip
+        if (bootstrap.Tooltip) {
+            [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+                .map(el => new bootstrap.Tooltip(el));
+        }
+    });
+</script>
+{% endblock %}

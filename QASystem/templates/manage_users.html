@@ -1,0 +1,667 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <!-- 页面标题与概述 -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-users me-2"></i>用户管理
+        </h1>
+        {% if current_user.role and current_user.role.name == 'super_admin' %}
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
+            <i class="fas fa-user-plus me-2"></i>创建新用户
+        </button>
+        {% else %}
+        <button class="btn btn-secondary" disabled data-bs-toggle="tooltip" title="仅超级管理员可创建用户">
+            <i class="fas fa-user-plus me-2"></i>创建新用户
+        </button>
+        {% endif %}
+    </div>
+
+    <!-- 统计卡片行 -->
+    <div class="row">
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">总用户数</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ pagination.total }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">待审核用户</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ pending_users|length }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user-clock fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-12 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">当前登录用户</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"> {{ current_user.username }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user-shield fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主要内容区域 -->
+    <div class="row">
+        <!-- 左侧：待审核用户和创建用户 -->
+        <div class="col-lg-4">
+            <!-- 待审核用户卡片 -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-dark d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-white">
+                        <i class="fas fa-user-clock me-2"></i>待审核用户
+                    </h6>
+                    <div class="dropdown no-arrow">
+                        <a class="dropdown-toggle text-white" href="#" role="button" id="pendingActionsDropdown"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v fa-sm fa-fw"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="pendingActionsDropdown">
+                            <div class="dropdown-header">操作:</div>
+                            <a class="dropdown-item" href="#" onclick="window.location.reload();">
+                                <i class="fas fa-sync fa-sm fa-fw me-2 text-gray-400"></i>刷新列表
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="pending-users-container" style="max-height: 300px; overflow-y: auto;">
+                        {% if pending_users|length > 0 %}
+                        {% for user in pending_users %}
+                        <div class="pending-user-item mb-2 p-2 border-left-warning rounded shadow-sm">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0 font-weight-bold">{{ user.username }}</h6>
+                                    <small class="text-muted">
+                                        <i class="far fa-clock me-1"></i>{{ user.created_at.strftime('%Y-%m-%d %H:%M')
+                                        }}
+                                    </small>
+                                </div>
+                                <div class="btn-group btn-group-sm">
+                                    <form action="{{ url_for('approve_user') }}" method="POST" class="d-inline">
+                                        <input type="hidden" name="user_id" value="{{ user.id }}">
+                                        <button type="submit" class="btn btn-outline-success btn-sm">
+                                            <i class="fas fa-check me-1"></i>批准
+                                        </button>
+                                    </form>
+                                    <form action="{{ url_for('reject_user') }}" method="POST" class="d-inline ms-2">
+                                        <input type="hidden" name="user_id" value="{{ user.id }}">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                                            <i class="fas fa-times me-1"></i>拒绝
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-check-circle fa-3x text-success mb-2"></i>
+                            <p class="text-muted">暂无待审核用户</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- 创建新用户卡片 -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-dark d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-white">
+                        <i class="fas fa-user-plus me-2"></i>创建新用户
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form id="createUserForm" method="POST" action="{{ url_for('add_user') }}" class="needs-validation"
+                          novalidate>
+                        <div class="mb-3">
+                            <label for="username" class="form-label">用户名</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                  <i class="fas fa-user text-muted"></i>
+                                </span>
+                                <input type="text" id="username" name="username" class="form-control border-start-0"
+                                       placeholder="至少4个字符" required minlength="4">
+                                <div class="invalid-feedback">请输入有效的用户名（至少4个字符）</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">密码</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                  <i class="fas fa-lock text-muted"></i>
+                                </span>
+                                <input type="password" id="password" name="password"
+                                       class="form-control border-start-0 border-end-0"
+                                       placeholder="至少8个字符" required minlength="8">
+                                <button class="btn btn-light border border-start-0" type="button" id="togglePassword">
+                                    <i class="fas fa-eye text-muted"></i>
+                                </button>
+                                <div class="invalid-feedback">密码至少需要8个字符</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="role_id" class="form-label">用户角色</label>
+                            <select id="role_id" name="role_id" class="form-select" required>
+                                <option value="">-- 选择角色 --</option>
+                                {% for role in roles %}
+                                {% if role.name != 'mini_user' %}
+                                <option value="{{ role.id }}">{{ role.name }}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                            <div class="invalid-feedback">请选择用户角色</div>
+                        </div>
+
+                        {% if current_user.role and current_user.role.name == 'super_admin' %}
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                            <i class="fas fa-user-plus me-2"></i>创建新用户
+                        </button>
+                        {% else %}
+                        <button class="btn btn-secondary" disabled data-bs-toggle="tooltip"
+                                title="仅超级管理员可创建用户">
+                            <i class="fas fa-user-plus me-2"></i>创建新用户
+                        </button>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧：用户列表 -->
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-dark d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-white">
+                        <i class="fas fa-list me-2"></i>用户列表
+                    </h6>
+                    <div class="d-flex align-items-center">
+                        <div class="input-group input-group-sm me-2 search-box" style="width: 250px;">
+                            <input type="text" id="userSearch" class="form-control" placeholder="搜索用户...">
+                            <button class="btn btn-outline-light" type="button">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle" id="usersTable">
+                            <thead class="table-light">
+                            <tr>
+                                <th width="60">#</th>
+                                <th>用户名</th>
+                                <th width="200">注册时间</th>
+                                <th>角色</th>
+                                <th width="120" class="text-center">操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for user in pagination.items %}
+                            <tr>
+                                <td>{{ user.id }}</td>
+                                <td>{{ user.username }}</td>
+                                <td>
+                                        <span data-bs-toggle="tooltip" data-bs-placement="top"
+                                              title="{{ user.created_at.strftime('%Y-%m-%d %H:%M:%S') }}">
+                                            {{ user.created_at.strftime('%Y-%m-%d') }}
+                                        </span>
+                                </td>
+                                <td>
+                                        <span class="badge {% if user.role.name == 'super_admin' %}bg-danger
+                                              {% elif user.role.name == 'admin' %}bg-primary
+                                              {% elif user.role.name == 'mini_user' %}bg-secondary
+                                              {% else %}bg-info{% endif %}">
+                                            {{ user.role.name }}
+                                        </span>
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group btn-group-sm">
+                                        {% if current_user.role and current_user.role.name == 'super_admin' %}
+                                        <button type="button" class="btn btn-outline-warning"
+                                                onclick="resetPassword('{{ user.id }}', '{{ user.username }}')"
+                                                data-bs-toggle="tooltip" title="重置密码">
+                                            <i class="fas fa-key"></i>
+                                        </button>
+                                        {% else %}
+                                        <button type="button" class="btn btn-outline-warning" disabled
+                                                data-bs-toggle="tooltip" title="仅超级管理员可重置密码">
+                                            <i class="fas fa-key"></i>
+                                        </button>
+                                        {% endif %}
+                                        {% if user.role.name != 'super_admin' %}
+                                            {% if current_user.role and current_user.role.name == 'super_admin' %}
+                                            <button type="button" class="btn btn-outline-danger"
+                                                    onclick="confirmDelete('{{ user.id }}', '{{ user.username }}')"
+                                                    data-bs-toggle="tooltip" title="删除用户">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                            {% else %}
+                                            <button type="button" class="btn btn-outline-danger" disabled
+                                                    data-bs-toggle="tooltip" title="仅超级管理员可删除用户">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        {% endif %}
+                                        {% else %}
+                                        <button type="button" class="btn btn-outline-danger" disabled
+                                                data-bs-toggle="tooltip" title="超级管理员不可删除">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center py-5">
+                                    <div class="empty-state">
+                                        <i class="fas fa-users-slash fa-4x text-muted mb-3"></i>
+                                        <h5>暂无用户数据</h5>
+                                        <p class="text-muted">点击"创建新用户"按钮添加第一个用户</p>
+                                        <button class="btn btn-primary" data-bs-toggle="modal"
+                                                data-bs-target="#addUserModal">
+                                            <i class="fas fa-user-plus me-2"></i>创建新用户
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {% if pagination.pages > 1 %}
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div class="text-muted small">
+                            显示 {{ pagination.items|length }} 条，共 {{ pagination.total }} 条记录
+                        </div>
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination pagination-sm mb-0">
+                                <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+                                    <a class="page-link" href="?page=1" aria-label="First">
+                                        <span aria-hidden="true"><i class="fas fa-angle-double-left"></i></span>
+                                    </a>
+                                </li>
+                                <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+                                    <a class="page-link" href="?page={{ pagination.prev_num }}" aria-label="Previous">
+                                        <span aria-hidden="true"><i class="fas fa-angle-left"></i></span>
+                                    </a>
+                                </li>
+
+                                {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2,
+                                right_current=2) %}
+                                {% if page_num %}
+                                <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
+                                    <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                                </li>
+                                {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">…</span>
+                                </li>
+                                {% endif %}
+                                {% endfor %}
+
+                                <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+                                    <a class="page-link" href="?page={{ pagination.next_num }}" aria-label="Next">
+                                        <span aria-hidden="true"><i class="fas fa-angle-right"></i></span>
+                                    </a>
+                                </li>
+                                <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+                                    <a class="page-link" href="?page={{ pagination.pages }}" aria-label="Last">
+                                        <span aria-hidden="true"><i class="fas fa-angle-double-right"></i></span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 删除确认模态框 -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title"><i class="fas fa-exclamation-triangle me-2"></i>删除用户</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-4">
+                    <i class="fas fa-exclamation-circle fa-3x text-warning mb-3"></i>
+                    <h5>您确定要删除此用户吗？</h5>
+                    <p class="text-muted">此操作不可撤销</p>
+                </div>
+
+                <div class="p-3 rounded bg-light border border-primary border-opacity-25 mb-3">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-user-alt fa-lg text-primary me-3"></i>
+                        <div>
+                            <div class="fw-bold text-dark" id="deleteUsername"></div>
+                            <small class="text-muted">删除后将移除所有相关的数据和权限</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <form id="deleteForm" action="{{ url_for('delete_user') }}" method="POST">
+                    <input type="hidden" name="user_id" id="deleteUserId">
+                    <button type="submit" class="btn btn-danger">确认删除</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 密码重置模态框 -->
+<div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title"><i class="fas fa-key me-2"></i>重置密码</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-4">
+                    <i class="fas fa-key fa-3x text-warning mb-3"></i>
+                    <h5>您确定要重置此用户的密码吗？</h5>
+                    <p class="text-muted">密码将被设置为默认密码</p>
+                </div>
+
+                <div class="p-3 rounded bg-light border border-primary border-opacity-25 mb-3">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-user-alt fa-lg text-primary me-3"></i>
+                        <div>
+                            <div class="fw-bold text-dark" id="resetUsername"></div>
+                            <small class="text-muted">重置后的密码将立即生效</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" id="confirmResetBtn" class="btn btn-warning">确认重置</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 新建用户模态框 -->
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title"><i class="fas fa-user-plus me-2"></i>创建新用户</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Duplicate the exact form from the left-bottom card -->
+                <form id="createUserFormModal" method="POST" action="{{ url_for('add_user') }}" class="needs-validation"
+                      novalidate>
+                    <div class="mb-3">
+                        <label for="usernameModal" class="form-label">用户名</label>
+                        <div class="input-group">
+              <span class="input-group-text bg-light border-end-0">
+                <i class="fas fa-user text-muted"></i>
+              </span>
+                            <input type="text" id="usernameModal" name="username" class="form-control border-start-0"
+                                   placeholder="至少4个字符" required minlength="4">
+                            <div class="invalid-feedback">请输入有效的用户名（至少4个字符）</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="passwordModal" class="form-label">密码</label>
+                        <div class="input-group">
+              <span class="input-group-text bg-light border-end-0">
+                <i class="fas fa-lock text-muted"></i>
+              </span>
+                            <input type="password" id="passwordModal" name="password"
+                                   class="form-control border-start-0 border-end-0"
+                                   placeholder="至少8个字符" required minlength="8">
+                            <button class="btn btn-light border border-start-0" type="button" id="togglePasswordModal">
+                                <i class="fas fa-eye text-muted"></i>
+                            </button>
+                            <div class="invalid-feedback">密码至少需要8个字符</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="role_idModal" class="form-label">用户角色</label>
+                        <select id="role_idModal" name="role_id" class="form-select" required>
+                            <option value="">-- 选择角色 --</option>
+                            {% for role in roles %}
+                            {% if role.name != 'mini_user' %}
+                            <option value="{{ role.id }}">{{ role.name }}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                        <div class="invalid-feedback">请选择用户角色</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <!-- Note: form attribute points to the form inside modal -->
+                <button type="submit" form="createUserFormModal" class="btn btn-primary">
+                    <i class="fas fa-plus-circle me-2"></i>创建用户
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* 统计卡片样式 */
+    .border-left-primary {
+        border-left: 4px solid #4e73df !important;
+    }
+
+    .border-left-success {
+        border-left: 4px solid #1cc88a !important;
+    }
+
+    .border-left-info {
+        border-left: 4px solid #36b9cc !important;
+    }
+
+    .border-left-warning {
+        border-left: 4px solid #f6c23e !important;
+    }
+
+    /* 卡片悬停效果 */
+    .card {
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.05);
+    }
+
+    /* 表格样式统一 */
+    .table td,
+    .table th {
+        padding: 0.75rem !important;
+        line-height: 1.5 !important;
+        vertical-align: middle !important;
+    }
+
+    /* 空状态样式 */
+    .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2rem;
+    }
+
+    /* 搜索框动画 */
+    .search-box {
+        transition: width 0.3s ease;
+    }
+
+    .search-box:focus-within {
+        width: 300px !important;
+    }
+
+    /* 卡片头部深色背景 */
+    .card-header.bg-dark {
+        background-color: #343a40 !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* 确保头部文字为白色 */
+    .text-white {
+        color: #ffffff !important;
+    }
+
+    /* 待审核用户项样式 */
+    .pending-user-item {
+        border-left-width: 4px;
+        transition: all 0.2s;
+    }
+
+    .pending-user-item:hover {
+        transform: translateX(5px);
+    }
+
+    /* 按钮组样式 */
+    .btn-group .btn {
+        box-shadow: none !important;
+    }
+
+    /* 模态框样式 */
+    .modal-content {
+        border: none;
+        border-radius: 0.5rem;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // 表单验证
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+
+        // 密码可见性切换 for main form
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const passwordInput = document.getElementById('password');
+            const icon = this.querySelector('i');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+        // 密码可见性切换 for modal form
+        document.getElementById('togglePasswordModal').addEventListener('click', function () {
+            const pwd = document.getElementById('passwordModal');
+            const icon = this.querySelector('i');
+            if (pwd.type === 'password') {
+                pwd.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                pwd.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+
+        // 初始化所有工具提示
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(el => new bootstrap.Tooltip(el));
+
+        // 用户搜索功能
+        const userSearch = document.getElementById('userSearch');
+        if (userSearch) {
+            userSearch.addEventListener('input', function () {
+                const searchValue = this.value.toLowerCase();
+                document.querySelectorAll('#usersTable tbody tr').forEach(row => {
+                    if (row.cells.length <= 1) return;
+                    const username = row.cells[1].textContent.toLowerCase();
+                    const role = row.cells[3].textContent.toLowerCase();
+                    row.style.display = (username.includes(searchValue) || role.includes(searchValue)) ? '' : 'none';
+                });
+            });
+        }
+    });
+
+    // 删除用户确认
+    function confirmDelete(userId, username) {
+        document.getElementById('deleteUserId').value = userId;
+        document.getElementById('deleteUsername').textContent = username;
+        new bootstrap.Modal(document.getElementById('deleteModal')).show();
+    }
+
+    // 重置密码
+    function resetPassword(userId, username) {
+        document.getElementById('resetUsername').textContent = username;
+        const modal = new bootstrap.Modal(document.getElementById('resetPasswordModal'));
+        modal.show();
+        document.getElementById('confirmResetBtn').onclick = function () {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = "{{ url_for('reset_password') }}";
+            form.style.display = 'none';
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'user_id';
+            input.value = userId;
+            form.appendChild(input);
+            document.body.appendChild(form);
+            form.submit();
+        };
+    }
+</script>
+{% endblock %}

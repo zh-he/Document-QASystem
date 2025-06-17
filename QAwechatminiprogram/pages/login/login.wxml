@@ -1,0 +1,61 @@
+<view class="login-container">
+  <!-- 标题 -->
+  <view class="title-section">
+    <view class="title">基于大语言模型的RAG文档问答助手</view>
+  </view>
+
+  <!-- 表单卡片 -->
+  <view class="form-card">
+    <!-- 用户名 -->
+    <view class="form-item">
+      <text class="label">用户名</text>
+      <view class="input-container">
+        <input class="input"
+               type="text"
+               value="{{username}}"
+               placeholder="请输入您的用户名"
+               placeholder-class="placeholder"
+               bindinput="onInputUsername" />
+      </view>
+    </view>
+
+    <!-- 密码 -->
+    <view class="form-item">
+      <text class="label">密码</text>
+      <view class="input-container">
+        <input class="input"
+               password="true"
+               value="{{password}}"  
+               placeholder="请输入您的密码"
+               placeholder-class="placeholder"
+               bindinput="onInputPassword" />
+      </view>
+    </view>
+
+    <!-- 忘记密码 -->
+    <view class="forgot-container">
+      <text class="forgot-password"
+            bindtap="onForgotPassword">忘记密码?</text>
+    </view>
+
+    <!-- 登录按钮 -->
+    <button class="btn-login"
+            hover-class="btn-login-hover"
+            bindtap="onLogin">登 录</button>
+
+    <!-- 分割线 -->
+    <view class="divider">
+      <view class="line"></view>
+      <view class="or">或</view>
+      <view class="line"></view>
+    </view>
+
+    <!-- 注册 -->
+    <view class="register-container">
+      <text>还没有账号？</text>
+      <text class="btn-register"
+            hover-class="btn-register-hover"
+            bindtap="onRegister">立即注册</text>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,45 @@
+
+<view class="profile-container">
+  <view class="title-section">
+    <view class="title">个人信息</view>
+  </view>
+
+  <view class="card-container">
+    <view class="form-card info-card">
+      <view class="section-header">
+        <text class="section-title">用户信息</text>
+      </view>
+      <view class="info-item">
+        <text class="info-label">用户名:</text>
+        <text class="info-value">{{ userInfo.username }}</text>
+      </view>
+      <view class="info-item">
+        <text class="info-label">注册时间:</text>
+        <text class="info-value">{{ userInfo.createdAt }}</text>
+      </view>
+    </view>
+
+    <view class="form-card doc-card">
+      <view class="section-header">
+        <text class="section-title">后台文档列表</text>
+      </view>
+      <view class="doc-list">
+        <block wx:for="{{ userInfo.document_names }}" wx:key="index">
+          <view class="doc-item">
+            <text class="doc-name">{{ item }}</text>
+          </view>
+        </block>
+        <view wx:if="{{!userInfo.document_names || userInfo.document_names.length === 0}}" class="empty-docs">
+          <text class="empty-text">暂无文档</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="form-card action-card" hover-class="action-card-hover" bindtap="goToModifyPassword">
+      <text class="action-text">修改密码</text>
+      <text class="arrow">›</text>
+    </view>
+  
+    <button class="btn-logout" hover-class="btn-logout-hover" bindtap="onLogout">退出登录</button>
+  </view>
+</view>

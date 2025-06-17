@@ -1,0 +1,4 @@
+.idea
+./QASystem/.idea
+./QASystem/__pycache__
+./QASystem/migrations

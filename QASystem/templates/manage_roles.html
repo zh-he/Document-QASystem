@@ -1,0 +1,450 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container-fluid p-4">
+    <!-- 页面标题与概述 -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-user-tag me-2"></i>角色管理
+        </h1>
+        {% if current_user.role and current_user.role.name == 'super_admin' %}
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addRoleModal">
+            <i class="fas fa-plus-circle me-2"></i>创建新角色
+        </button>
+        {% else %}
+        <button class="btn btn-secondary" disabled data-bs-toggle="tooltip" title="仅超级管理员可创建角色">
+            <i class="fas fa-plus-circle me-2"></i>创建新角色
+        </button>
+        {% endif %}
+    </div>
+
+    <!-- 统计卡片行 -->
+    <div class="row">
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">角色总数</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ roles|length }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user-tag fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">最高权限角色</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {% for role in roles %}
+                                {% if role.name == 'super_admin' %}
+                                super_admin
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user-shield fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-12 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">当前登录角色</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ current_user.role.name if
+                                current_user.role else '未分配角色' }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user-check fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 角色管理卡片 -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 bg-dark d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-white">
+                <i class="fas fa-list me-2"></i>角色列表
+            </h6>
+            <div class="dropdown no-arrow">
+                <a class="dropdown-toggle text-white" href="#" role="button" id="roleActionsDropdown"
+                   data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v fa-sm fa-fw"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="roleActionsDropdown">
+                    <div class="dropdown-header">操作:</div>
+                    {% if current_user.role and current_user.role.name == 'super_admin' %}
+                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#addRoleModal">
+                        <i class="fas fa-plus-circle fa-sm fa-fw me-2 text-gray-400"></i>创建新角色
+                    </a>
+                    {% else %}
+                    <a class="dropdown-item disabled" href="#" data-bs-toggle="tooltip" title="仅超级管理员可创建角色">
+                        <i class="fas fa-plus-circle fa-sm fa-fw me-2 text-gray-400"></i>创建新角色
+                    </a>
+                    {% endif %}
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#" onclick="window.location.reload();">
+                        <i class="fas fa-sync fa-sm fa-fw me-2 text-gray-400"></i>刷新列表
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle" id="roleTable">
+                    <thead class="table-light">
+                    <tr>
+                        <th width="60" class="text-center">#</th>
+                        <th>角色名称</th>
+                        <th>描述</th>
+                        <th width="200" class="text-center">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for role in roles %}
+                    <tr>
+                        <td class="text-center">{{ role.id }}</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div>
+                                    <span class="fw-bold">{{ role.name }}</span>
+                                    {% if role.name == 'super_admin' %}
+                                    <span class="ms-2 badge bg-danger">超级管理员</span>
+                                    {% elif role.name == 'admin' %}
+                                    <span class="ms-2 badge bg-primary">管理员</span>
+                                    {% elif role.name == 'mini_user' %}
+                                    <span class="ms-2 badge bg-secondary">小程序用户</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ role.description or '暂无描述' }}</td>
+                        <td class="text-center">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-sm btn-outline-primary"
+                                        {% if role.name in [
+                                'super_admin','admin','mini_user'] %}
+                                disabled title="系统预设角色无法编辑"
+                                {% elif current_user.role and current_user.role.name == 'super_admin' %}
+                                data-bs-toggle="modal"
+                                data-bs-target="#addRoleModal"
+                                onclick="prefillAddRoleForm('{{ role.id }}','{{ role.name }}','{{ role.description or ''
+                                }}')"
+                                title="编辑角色"
+                                {% else %}
+                                disabled title="仅超级管理员可编辑角色"
+                                {% endif %}>
+                                <i class="fas fa-edit"></i>
+                                </button>
+
+                                <!-- 删除按钮 -->
+                                {% if role.name not in ['super_admin','admin','mini_user'] %}
+                                {% if current_user.role and current_user.role.name == 'super_admin' %}
+                                <button type="button" class="btn btn-sm btn-outline-danger"
+                                        onclick="confirmDeleteRole({{ role.id }},'{{ role.name }}')"
+                                        title="删除角色">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                                {% else %}
+                                <button type="button" class="btn btn-sm btn-outline-danger" disabled
+                                        title="仅超级管理员可删除角色">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                                {% endif %}
+                                {% else %}
+                                <button type="button" class="btn btn-sm btn-outline-danger" disabled
+                                        title="系统预设角色无法删除">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% if not roles %}
+            <div class="text-center py-5 empty-state">
+                <i class="fas fa-user-tag fa-4x text-muted mb-3"></i>
+                <h5>暂无角色数据</h5>
+                <p class="text-muted">点击"创建新角色"按钮添加第一个角色</p>
+                {% if current_user.role and current_user.role.name == 'super_admin' %}
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addRoleModal">
+                    <i class="fas fa-plus-circle me-2"></i>创建新角色
+                </button>
+                {% else %}
+                <button class="btn btn-secondary" disabled data-bs-toggle="tooltip" title="仅超级管理员可创建角色">
+                    <i class="fas fa-plus-circle me-2"></i>创建新角色
+                </button>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- 角色权限说明卡片 -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 bg-dark d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-white">
+                <i class="fas fa-shield-alt me-2"></i>角色权限说明
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                    <tr>
+                        <th width="60" class="text-center">#</th>
+                        <th>角色名称</th>
+                        <th>权限说明</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td class="text-center">1</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <span class="fw-bold">超级管理员</span>
+                                <span class="ms-2 badge bg-danger">super_admin</span>
+                            </div>
+                        </td>
+                        <td>完全访问系统的所有功能，包括用户管理、角色管理、问答知识库管理等所有操作权限。</td>
+                    </tr>
+                    <tr>
+                        <td class="text-center">2</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <span class="fw-bold">管理员</span>
+                                <span class="ms-2 badge bg-primary">admin</span>
+                            </div>
+                        </td>
+                        <td>可以访问系统的大部分功能，管理问答知识库，但无法管理超级管理员账户和系统关键设置。</td>
+                    </tr>
+                    <tr>
+                        <td class="text-center">3</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <span class="fw-bold">小程序用户</span>
+                                <span class="ms-2 badge bg-secondary">mini_user</span>
+                            </div>
+                        </td>
+                        <td>只能通过微信小程序访问系统的问答功能，可以提交问题并获取答案。</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 添加/编辑角色模态框 -->
+<div class="modal fade" id="addRoleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="roleModalTitle"><i class="fas fa-plus-circle me-2"></i>创建新角色</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('add_role') }}" id="addRoleForm" class="needs-validation" novalidate>
+                <div class="modal-body">
+                    <input type="hidden" id="existing_role_id" name="existing_role_id" value="">
+                    <div class="mb-3">
+                        <label for="role_name" class="form-label">角色名称</label>
+                        <input type="text" class="form-control" id="role_name" name="role_name" required>
+                        <div class="invalid-feedback">请输入角色名称</div>
+                        <div class="form-text">名称应简洁明了，不含特殊字符</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="role_desc" class="form-label">角色描述</label>
+                        <textarea class="form-control" id="role_desc" name="role_desc" rows="3"></textarea>
+                        <div class="form-text">简要描述该角色在系统中的职责和权限范围</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-primary" id="roleSubmitBtn">创建角色</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 删除确认模态框 -->
+<div class="modal fade" id="deleteRoleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="fas fa-exclamation-triangle me-2"></i>删除角色</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>您确定要删除角色 <strong id="delete-role-name"></strong> 吗？</p>
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-circle me-2"></i>此操作将移除该角色的所有用户的角色关联，可能影响这些用户对系统的访问权限，请谨慎操作！
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <form method="POST" action="{{ url_for('delete_role') }}">
+                    <input type="hidden" id="delete_role_id" name="role_id">
+                    <button type="submit" class="btn btn-danger">确认删除</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .border-left-primary {
+        border-left: 4px solid #4e73df !important;
+    }
+
+    .border-left-success {
+        border-left: 4px solid #1cc88a !important;
+    }
+
+    .border-left-info {
+        border-left: 4px solid #36b9cc !important;
+    }
+
+    .card {
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.05);
+    }
+
+    .table td {
+        vertical-align: middle;
+    }
+
+    .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2rem;
+    }
+
+    .btn-group .btn {
+        box-shadow: none !important;
+    }
+
+    .modal-content {
+        border: none;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+
+    /* 卡片头部深色背景 */
+    .card-header.bg-dark {
+        background-color: #343a40 !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* 确保头部文字为白色 */
+    .text-white {
+        color: #ffffff !important;
+    }
+
+    /* 统一表格样式 */
+    .table td,
+    .table th {
+        padding: 0.75rem !important;
+        line-height: 1.5 !important;
+        vertical-align: middle !important;
+    }
+
+    /* 角色列表表格和角色权限表格特定样式 */
+    #roleTable td,
+    #roleTable th,
+    .card-body .table td,
+    .card-body .table th {
+        padding: 0.75rem !important;
+        line-height: 1.5 !important;
+        vertical-align: middle !important;
+    }
+
+    /* 移除可能造成不一致的样式 */
+    .table td[style*="padding"],
+    .table th[style*="padding"] {
+        padding: 0.75rem !important;
+    }
+
+    /* 确保badge和其他内容的对齐 */
+    .table .badge {
+        vertical-align: middle;
+    }
+
+    /* 确保表格内容垂直居中 */
+    .table .d-flex {
+        min-height: 24px;
+        align-items: center;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // 表单验证
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.prototype.slice.call(forms).forEach(form => {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+
+        // 模态框重置
+        const addRoleModal = document.getElementById('addRoleModal');
+        addRoleModal.addEventListener('hidden.bs.modal', () => {
+            const form = document.getElementById('addRoleForm');
+            form.reset();
+            form.classList.remove('was-validated');
+            document.getElementById('existing_role_id').value = '';
+            document.getElementById('roleModalTitle').innerHTML = '<i class="fas fa-plus-circle me-2"></i>创建新角色';
+            document.getElementById('roleSubmitBtn').textContent = '创建角色';
+        });
+    });
+
+    // 预填充表单用于编辑
+    function prefillAddRoleForm(id, name, desc) {
+        document.getElementById('roleModalTitle').innerHTML = '<i class="fas fa-edit me-2"></i>编辑角色';
+        document.getElementById('roleSubmitBtn').textContent = '保存更改';
+        document.getElementById('role_name').value = name;
+        document.getElementById('role_desc').value = desc;
+        document.getElementById('existing_role_id').value = id;
+    }
+
+    // 确认删除角色
+    function confirmDeleteRole(id, name) {
+        document.getElementById('delete_role_id').value = id;
+        document.getElementById('delete-role-name').textContent = name;
+        new bootstrap.Modal(document.getElementById('deleteRoleModal')).show();
+    }
+</script>
+
+{% endblock %}

@@ -1,0 +1,113 @@
+/* 全局样式 */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa; /* 浅灰，温和背景 */
+}
+
+/* 顶部导航栏 */
+.navbar {
+    background-color: #343a40 !important; /* 深色统一 */
+    padding: 12px 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ffffff !important;
+}
+
+.navbar-text {
+    font-size: 1rem;
+    color: #ffffff !important;
+}
+
+/* 侧边栏 */
+.sidebar {
+    background-color: #343a40 !important; /* 深色统一 */
+    min-height: 100vh;
+    padding-top: 20px;
+}
+
+.sidebar .nav-link {
+    font-size: 1rem;
+    padding: 12px 15px;
+    color: #ffffff !important;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.sidebar .nav-link.active,
+.sidebar .nav-link:hover {
+    background-color: #007bff;
+    color: white !important;
+    border-radius: 5px;
+}
+
+/* 主要内容区域 */
+.main-content {
+    min-height: 100vh;
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* 按钮样式 */
+.btn-primary {
+    background-color: #343a40 !important;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    font-size: 1rem;
+    border-radius: 5px;
+    transition: background 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #007bff !important;
+}
+
+/* 表格样式 */
+.table {
+    background-color: white;
+    border-radius: 5px;
+    overflow: hidden;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table thead {
+    background-color: #007bff; /* 蓝色表头 */
+    color: #ffffff;            /* 白字 */
+}
+
+.table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* 卡片样式 */
+.card {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    background-color: #343a40 !important; /* 与表头统一 */
+    color: #ffffff;
+    font-weight: bold;
+}
+
+/* 响应式优化 */
+@media (max-width: 768px) {
+    .sidebar {
+        position: fixed;
+        width: 100%;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid #dee2e6;
+        padding-bottom: 10px;
+    }
+    .main-content {
+        margin-top: 60px;
+    }
+}

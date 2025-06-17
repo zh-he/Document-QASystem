@@ -1,0 +1,159 @@
+.register-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  .title-section {
+    width: 100%;
+    padding: 40rpx 0;
+    margin-top: 20rpx;
+    margin-bottom: 30rpx;
+  }
+  
+  .title {
+    font-size: 36rpx;
+    font-weight: 600;
+    color: #2c3e50;
+    text-align: center;
+    letter-spacing: 2rpx;
+    line-height: 1.4;
+  }
+  
+  .form-card {
+    width: 90%;
+    max-width: 650rpx;
+    background-color: #ffffff;
+    border-radius: 20rpx;
+    box-shadow: 0 8rpx 30rpx rgba(0, 0, 0, 0.08);
+    padding: 40rpx 30rpx;
+    box-sizing: border-box;
+    margin: 0 auto;
+    margin-bottom: 40rpx;
+  }
+  
+  .form-item {
+    margin-bottom: 30rpx;
+  }
+  
+  .label {
+    display: block;
+    font-size: 28rpx;
+    color: #34495e;
+    margin-bottom: 12rpx;
+    font-weight: 500;
+  }
+  
+  .input-container {
+    display: flex;
+    align-items: center;
+    border: 2rpx solid #dfe6e9;
+    border-radius: 12rpx;
+    padding: 0 24rpx;
+    height: 88rpx;
+    transition: all 0.3s ease;
+  }
+  
+  .input-container:hover {
+    border-color: #b2bec3;
+  }
+  
+  .input {
+    flex: 1;
+    height: 100%;
+    font-size: 30rpx;
+    color: #2d3436;
+    background: transparent;
+  }
+  
+  .placeholder {
+    color: #b2bec3;
+  }
+  
+  input:focus {
+    border-color: #4dabf7;
+    box-shadow: 0 4rpx 12rpx rgba(77, 171, 247, 0.1);
+    outline: none;
+  }
+  
+  .agreement-container {
+    display: flex;
+    align-items: center;
+    margin: 30rpx 0;
+  }
+  
+  .agreement-checkbox {
+    margin-right: 16rpx;
+  }
+  
+  .agreement-text {
+    font-size: 26rpx;
+    color: #7f8c8d;
+  }
+  
+  .agreement-link {
+    font-size: 26rpx;
+    color: #3498db;
+    margin-left: 8rpx;
+  }
+  
+  .btn-register {
+    width: 100%;
+    height: 88rpx;
+    line-height: 88rpx;
+    background: linear-gradient(135deg, #4285f4, #3367d6);
+    color: white;
+    font-size: 32rpx;
+    font-weight: 500;
+    border-radius: 12rpx;
+    letter-spacing: 4rpx;
+    box-shadow: 0 6rpx 16rpx rgba(66, 133, 244, 0.3);
+    transition: all 0.2s ease;
+    margin-top: 10rpx;
+  }
+  
+  .btn-register-hover {
+    opacity: 0.9;
+    transform: translateY(2rpx);
+    box-shadow: 0 3rpx 8rpx rgba(66, 133, 244, 0.3);
+  }
+  
+  .login-link-container {
+    text-align: center;
+    font-size: 28rpx;
+    color: #636e72;
+    margin-top: 10rpx;
+  }
+  
+  .btn-login-link {
+    color: #4285f4;
+    margin-left: 10rpx;
+    font-weight: 500;
+    display: inline-block;
+    position: relative;
+  }
+  
+  .btn-login-link::after {
+    content: '';
+    position: absolute;
+    bottom: -4rpx;
+    left: 0;
+    width: 0;
+    height: 2rpx;
+    background: #4285f4;
+    transition: width 0.3s ease;
+  }
+  
+  .btn-login-link:hover::after {
+    width: 100%;
+  }
+  
+  .btn-login-link:active {
+    color: #3367d6;
+  }
+  

@@ -1,0 +1,530 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid p-4">
+    <!-- 页面标题与概述 -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-chart-bar me-2"></i> 系统概览
+        </h1>
+        <span class="badge bg-primary-subtle text-primary-emphasis rounded-pill px-3 py-2">
+            <i class="fas fa-clock me-1"></i> 更新于:
+            <span id="lastUpdate" class="fw-bold">--</span>
+        </span>
+    </div>
+
+    <!-- 数据概览卡片 -->
+    <div class="row mb-4">
+        <!-- 总用户数 -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">总用户数</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalUsers">--</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 总文档数 -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">总文档数</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalDocs">--</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-file-alt fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 近 7 日新增用户 -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">近7日新增用户</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="newUsers">--</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user-plus fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 近 7 日新增文档 -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">近7日新增文档</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="newDocs">--</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-file-upload fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 图表区域 -->
+    <div class="row">
+        <!-- 用户变化图表 -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3 bg-dark d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-white">
+                        <i class="fas fa-chart-line me-2"></i> 用户增长趋势
+                    </h6>
+                    <div class="dropdown no-arrow">
+                        <button class="btn btn-link text-white p-0" id="userChartOptions" data-bs-toggle="dropdown">
+                            <i class="fas fa-ellipsis-v"></i> <i class="fas fa-caret-down"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userChartOptions">
+                            <div class="dropdown-header">显示模式:</div>
+                            <a class="dropdown-item user-chart-view active" data-view="cumulative" href="#">
+                                <i class="fas fa-chart-area fa-sm fa-fw me-2 text-gray-400"></i>累计用户数
+                            </a>
+                            <a class="dropdown-item user-chart-view" data-view="daily" href="#">
+                                <i class="fas fa-chart-bar fa-sm fa-fw me-2 text-gray-400"></i>日增用户数
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#" id="refreshUserChart">
+                                <i class="fas fa-sync fa-sm fa-fw me-2 text-gray-400"></i>刷新图表
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area">
+                        <canvas id="userChart" height="400"></canvas>
+                    </div>
+                    <div class="mt-3 text-center small chart-info" id="userChartInfo">
+                        <span class="me-2"><i class="fas fa-circle text-primary"></i> 累计用户数</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 文档变化图表 -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3 bg-dark d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-white">
+                        <i class="fas fa-file-alt me-2"></i> 文档上传趋势
+                    </h6>
+                    <div class="dropdown no-arrow">
+                        <button class="btn btn-link text-white p-0" id="docChartOptions" data-bs-toggle="dropdown">
+                            <i class="fas fa-ellipsis-v"></i> <i class="fas fa-caret-down"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="docChartOptions">
+                            <div class="dropdown-header">显示模式:</div>
+                            <a class="dropdown-item doc-chart-view active" data-view="cumulative" href="#">
+                                <i class="fas fa-chart-area fa-sm fa-fw me-2 text-gray-400"></i>累计文档数
+                            </a>
+                            <a class="dropdown-item doc-chart-view" data-view="daily" href="#">
+                                <i class="fas fa-chart-bar fa-sm fa-fw me-2 text-gray-400"></i>日增文档数
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#" id="refreshDocChart">
+                                <i class="fas fa-sync fa-sm fa-fw me-2 text-gray-400"></i>刷新图表
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area">
+                        <canvas id="docChart" height="400"></canvas>
+                    </div>
+                    <div class="mt-3 text-center small chart-info" id="docChartInfo">
+                        <span class="me-2"><i class="fas fa-circle text-success"></i> 累计文档数</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    /* ==== 工具函数 ==== */
+    function formatNumber(n) {
+        return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    function sum(arr) {
+        return arr.reduce((a, b) => a + b, 0);
+    }
+
+    // 用 ISO 日期数组计算最近 7 天
+    function sumLast7Days(dates, data) {
+        if (!dates || dates.length === 0) {
+            return 0;
+        }
+
+        // 获取当前日期并格式化为YYYY-MM-DD
+        const today = new Date();
+        const formattedToday = today.toISOString().split('T')[0]; // 格式化为YYYY-MM-DD
+
+        // 计算7天前的日期（包括今天）
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(today.getDate() - 6); // 6天前 + 今天 = 7天
+        const formattedSevenDaysAgo = sevenDaysAgo.toISOString().split('T')[0];
+
+        // 创建一个查找表，包含最近7天的所有日期字符串
+        const last7DaysSet = new Set();
+        for (let i = 0; i < 7; i++) {
+            const d = new Date();
+            d.setDate(today.getDate() - i);
+            last7DaysSet.add(d.toISOString().split('T')[0]);
+        }
+
+        // 计算符合日期范围的数据总和
+        let sum = 0;
+        for (let i = 0; i < dates.length; i++) {
+            // 检查日期是否在最近7天范围内
+            if (last7DaysSet.has(dates[i])) {
+                sum += data[i];
+            }
+        }
+
+        return sum;
+    }
+
+    // 使用更新后的函数替换原有函数调用
+    /* ==== 加载用户数据 ==== */
+    async function loadUserData() {
+        try {
+            const res = await fetch('/admin/stats/users');
+            const d = await res.json();
+            userData.dates = d.dates;
+            userData.labels = d.labels;
+            userData.rawData = d.data;
+            userData.cumulativeData = cumulate(d.data);
+
+            const tot = sum(d.data);
+            const recent = sumLast7Days(d.dates, d.data); // 使用新函数
+            document.getElementById('totalUsers').textContent = formatNumber(tot);
+            document.getElementById('newUsers').textContent = formatNumber(recent);
+
+            renderChart('userChart', userData, 'cumulative', {
+                borderColor: '#4e73df',
+                gradientStart: 'rgba(78,115,223,.3)',
+                gradientEnd: 'rgba(78,115,223,0)',
+                pointColor: '#4e73df',
+                colorClass: 'text-primary',
+                cumulativeLabel: '累计用户数',
+                dailyLabel: '日增用户数'
+            });
+
+            updateLastUpdate(d.last_update);
+        } catch (e) {
+            console.error('用户数据加载失败', e);
+        }
+    }
+
+    /* ==== 加载文档数据 ==== */
+    async function loadDocData() {
+        try {
+            const res = await fetch('/admin/stats/docs');
+            const d = await res.json();
+            docData.dates = d.dates;
+            docData.labels = d.labels;
+            docData.rawData = d.data;
+            docData.cumulativeData = cumulate(d.data);
+
+            const tot = sum(d.data);
+            const recent = sumLast7Days(d.dates, d.data); // 使用新函数
+            document.getElementById('totalDocs').textContent = formatNumber(tot);
+            document.getElementById('newDocs').textContent = formatNumber(recent);
+
+            renderChart('docChart', docData, 'cumulative', {
+                borderColor: '#1cc88a',
+                gradientStart: 'rgba(28,200,138,.3)',
+                gradientEnd: 'rgba(28,200,138,0)',
+                pointColor: '#1cc88a',
+                colorClass: 'text-success',
+                cumulativeLabel: '累计文档数',
+                dailyLabel: '日增文档数'
+            });
+        } catch (e) {
+            console.error('文档数据加载失败', e);
+        }
+    }
+
+    function cumulate(arr) {
+        return arr.reduce((acc, cur) => (acc.push((acc.at(-1) || 0) + cur), acc), []);
+    }
+
+    function updateLastUpdate(ts) {
+        document.getElementById('lastUpdate').textContent = ts || '--';
+    }
+
+    /* ==== 全局数据 ==== */
+    let userData = {dates: [], labels: [], rawData: [], cumulativeData: []};
+    let docData = {dates: [], labels: [], rawData: [], cumulativeData: []};
+
+    /* ==== 渲染图表 ==== */
+    function renderChart(id, cd, mode, cfg) {
+        const ctx = document.getElementById(id).getContext('2d');
+        if (window[id] instanceof Chart) window[id].destroy();
+        const dataArr = mode === 'cumulative' ? cd.cumulativeData : cd.rawData;
+        const labelTxt = mode === 'cumulative' ? cfg.cumulativeLabel : cfg.dailyLabel;
+        document.getElementById(id + 'Info').innerHTML =
+            `<span class="me-2"><i class="fas fa-circle ${cfg.colorClass}"></i> ${labelTxt}</span>`;
+        const grad = ctx.createLinearGradient(0, 0, 0, 500);
+        grad.addColorStop(0, cfg.gradientStart);
+        grad.addColorStop(1, cfg.gradientEnd);
+        window[id] = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: cd.labels,
+                datasets: [{
+                    label: labelTxt,
+                    data: dataArr,
+                    borderColor: cfg.borderColor,
+                    backgroundColor: grad,
+                    borderWidth: 2,
+                    pointRadius: 4,
+                    pointBackgroundColor: cfg.pointColor,
+                    pointBorderColor: '#fff',
+                    pointHoverRadius: 6,
+                    pointHoverBorderWidth: 3,
+                    tension: .4,
+                    fill: true
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {display: false},
+                    tooltip: {
+                        backgroundColor: '#fff',
+                        bodyColor: '#858796',
+                        titleColor: '#6e707e',
+                        borderColor: '#dddfeb',
+                        borderWidth: 1,
+                        padding: 15,
+                        displayColors: false,
+                        caretPadding: 10,
+                        callbacks: {label: ctx => `${labelTxt}: ${formatNumber(ctx.raw)}`}
+                    }
+                },
+                scales: {
+                    x: {grid: {display: false, drawBorder: false}, ticks: {color: '#858796', padding: 10}},
+                    y: {
+                        grid: {color: 'rgba(0,0,0,.05)', borderDash: [2], drawBorder: false},
+                        ticks: {color: '#858796', padding: 10, beginAtZero: true, callback: v => formatNumber(v)}
+                    }
+                }
+            }
+        });
+    }
+
+    /* ==== 加载用户数据 ==== */
+    async function loadUserData() {
+        try {
+            const res = await fetch('/admin/stats/users');
+            const d = await res.json();
+            userData.dates = d.dates;
+            userData.labels = d.labels;
+            userData.rawData = d.data;
+            userData.cumulativeData = cumulate(d.data);
+
+            const tot = sum(d.data);
+            const recent = sumLast7Days(d.dates, d.data); // 使用新函数
+            document.getElementById('totalUsers').textContent = formatNumber(tot);
+            document.getElementById('newUsers').textContent = formatNumber(recent);
+
+            renderChart('userChart', userData, 'cumulative', {
+                borderColor: '#4e73df',
+                gradientStart: 'rgba(78,115,223,.3)',
+                gradientEnd: 'rgba(78,115,223,0)',
+                pointColor: '#4e73df',
+                colorClass: 'text-primary',
+                cumulativeLabel: '累计用户数',
+                dailyLabel: '日增用户数'
+            });
+
+            updateLastUpdate(d.last_update);
+        } catch (e) {
+            console.error('用户数据加载失败', e);
+        }
+    }
+
+    /* ==== 加载文档数据 ==== */
+    async function loadDocData() {
+        try {
+            const res = await fetch('/admin/stats/docs');
+            const d = await res.json();
+            docData.dates = d.dates;
+            docData.labels = d.labels;
+            docData.rawData = d.data;
+            docData.cumulativeData = cumulate(d.data);
+
+            const tot = sum(d.data);
+            const recent = sumLast7Days(d.dates, d.data); // 使用新函数
+            document.getElementById('totalDocs').textContent = formatNumber(tot);
+            document.getElementById('newDocs').textContent = formatNumber(recent);
+
+            renderChart('docChart', docData, 'cumulative', {
+                borderColor: '#1cc88a',
+                gradientStart: 'rgba(28,200,138,.3)',
+                gradientEnd: 'rgba(28,200,138,0)',
+                pointColor: '#1cc88a',
+                colorClass: 'text-success',
+                cumulativeLabel: '累计文档数',
+                dailyLabel: '日增文档数'
+            });
+        } catch (e) {
+            console.error('文档数据加载失败', e);
+        }
+    }
+
+    /* ==== 初始化 & 交互 ==== */
+    document.addEventListener('DOMContentLoaded', () => {
+        loadUserData();
+        loadDocData();
+
+        document.querySelectorAll('.user-chart-view').forEach(a => {
+            a.addEventListener('click', e => {
+                e.preventDefault();
+                document.querySelectorAll('.user-chart-view').forEach(b => b.classList.remove('active'));
+                a.classList.add('active');
+                renderChart('userChart', userData, a.dataset.view, {
+                    borderColor: '#4e73df',
+                    gradientStart: 'rgba(78,115,223,.3)',
+                    gradientEnd: 'rgba(78,115,223,0)',
+                    pointColor: '#4e73df',
+                    colorClass: 'text-primary',
+                    cumulativeLabel: '累计用户数',
+                    dailyLabel: '日增用户数'
+                });
+            });
+        });
+
+        document.querySelectorAll('.doc-chart-view').forEach(a => {
+            a.addEventListener('click', e => {
+                e.preventDefault();
+                document.querySelectorAll('.doc-chart-view').forEach(b => b.classList.remove('active'));
+                a.classList.add('active');
+                renderChart('docChart', docData, a.dataset.view, {
+                    borderColor: '#1cc88a',
+                    gradientStart: 'rgba(28,200,138,.3)',
+                    gradientEnd: 'rgba(28,200,138,0)',
+                    pointColor: '#1cc88a',
+                    colorClass: 'text-success',
+                    cumulativeLabel: '累计文档数',
+                    dailyLabel: '日增文档数'
+                });
+            });
+        });
+
+        document.getElementById('refreshUserChart').addEventListener('click', e => {
+            e.preventDefault();
+            loadUserData();
+        });
+        document.getElementById('refreshDocChart').addEventListener('click', e => {
+            e.preventDefault();
+            loadDocData();
+        });
+    });
+</script>
+
+
+<style>
+    /* -------- 公共样式 -------- */
+    .chart-area {
+        position: relative;
+        height: 400px;
+        overflow: hidden;
+    }
+
+    .card {
+        transition: .3s;
+        border-radius: .5rem;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15) !important;
+    }
+
+    .border-left-primary {
+        border-left: 4px solid #4e73df !important;
+    }
+
+    .border-left-success {
+        border-left: 4px solid #1cc88a !important;
+    }
+
+    .border-left-info {
+        border-left: 4px solid #36b9cc !important;
+    }
+
+    .border-left-warning {
+        border-left: 4px solid #f6c23e !important;
+    }
+
+    .chart-info {
+        font-size: .9rem;
+    }
+
+    .dropdown-item.active {
+        background: rgba(0, 0, 0, .1);
+        font-weight: bold;
+    }
+
+    .dropdown-header {
+        font-weight: 600;
+        font-size: .8rem;
+        text-transform: uppercase;
+        letter-spacing: .03em;
+    }
+
+    .dropdown-toggle::after {
+        display: none;
+    }
+
+    .card-header {
+        border-bottom: 1px solid rgba(255, 255, 255, .1);
+    }
+
+    .text-white {
+        color: #fff !important;
+    }
+
+    .dropdown-menu {
+        padding: .5rem 0;
+        border: none;
+        box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15);
+    }
+
+    .dropdown-item {
+        padding: .5rem 1.25rem;
+        font-size: .85rem;
+        transition: background-color .2s;
+    }
+
+    .dropdown-item:hover {
+        background: rgba(0, 0, 0, .05);
+    }
+
+    .btn-link.text-white {
+        text-decoration: none;
+    }
+</style>
+{% endblock %}
